@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "spherexportal"
+  labels:
+    app.kubernetes.io/name: "spherex-doc-portal"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "spherex-doc-portal"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "spherex-doc-portal"
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: app
+          imagePullPolicy: "IfNotPresent"
+          # Use images field in a Kustomization to set/update image tag
+          image: "lsstsqre/spherexportal"
+          ports:
+            - containerPort: 8080
+              name: "app"
+          envFrom:
+            - configMapRef:
+                name: "spherexportal"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "all"
+            readOnlyRootFilesystem: true
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
