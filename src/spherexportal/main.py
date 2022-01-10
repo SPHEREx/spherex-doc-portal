@@ -15,8 +15,7 @@ from safir.logging import configure_logging
 from safir.middleware.x_forwarded import XForwardedMiddleware
 
 from .config import config
-from .handlers.external import external_router
-from .handlers.internal import internal_router
+from .pages.handlers import router
 
 __all__ = ["app", "config"]
 
@@ -27,21 +26,12 @@ configure_logging(
     name=config.logger_name,
 )
 
-app = FastAPI()
-"""The main FastAPI application for spherex-doc-portal."""
-
-# Define the external routes in a subapp so that it will serve its own OpenAPI
-# interface definition and documentation URLs under the external URL.
-_subapp = FastAPI(
-    title="spherex-doc-portal",
+app = FastAPI(
+    title="SPHEREx Documentation Portal",
     description=metadata("spherex-doc-portal").get("Summary", ""),
     version=metadata("spherex-doc-portal").get("Version", "0.0.0"),
 )
-_subapp.include_router(external_router)
-
-# Attach the internal routes and subapp to the main application.
-app.include_router(internal_router)
-app.mount(f"/{config.name}", _subapp)
+app.include_router(router)
 
 
 @app.on_event("startup")
