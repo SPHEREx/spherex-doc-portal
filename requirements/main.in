@@ -12,3 +12,4 @@ uvicorn[standard]
 
 # Other dependencies.
 safir
+pydantic
