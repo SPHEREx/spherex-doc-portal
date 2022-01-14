@@ -7,5 +7,6 @@ images:
 
 resources:
   - configmap.yaml
+  - dataset-configmap.yaml
   - deployment.yaml
   - service.yaml

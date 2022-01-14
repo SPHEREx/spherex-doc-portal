@@ -32,6 +32,14 @@ spec:
               drop:
                 - "all"
             readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: "dataset"
+              mountPath: "/opt/spherexportal/dataset/"
+              readOnly: true
+      volumes:
+        - name: "dataset"
+          configMap:
+            name: "spherex-portal-dataset"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
