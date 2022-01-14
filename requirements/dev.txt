@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes --output-file=requirements/dev.txt requirements/dev.in
 #
-anyio==3.4.0 \
-    --hash=sha256:24adc69309fb5779bc1e06158e143e0b6d2c56b302a3ac3de3083c705a6ed39d \
-    --hash=sha256:2855a9423524abcdd652d942f8932fda1735210f77a6b392eafd9ff34d3fe020
+anyio==3.5.0 \
+    --hash=sha256:a0aeffe2fb1fdf374a8e4b471444f0f3ac4fb9f5a5b542b48824475e0042a5a6 \
+    --hash=sha256:b5fa16c5ff93fa1046f2eeb5bbff2dad4d3514d6cda61d02816dba34fa8c3c2e
     # via
     #   -c requirements/main.txt
     #   httpcore
@@ -112,9 +112,9 @@ httpx==0.21.3 \
     # via
     #   -c requirements/main.txt
     #   -r requirements/dev.in
-identify==2.4.2 \
-    --hash=sha256:67c1e66225870dce721228176637a8ef965e8dd58450bcc7592249d0dfc4da6c \
-    --hash=sha256:93e8ec965e888f2212aa5c24b2b662f4832c39acb1d7196a70ea45acb626a05e
+identify==2.4.4 \
+    --hash=sha256:6b4b5031f69c48bf93a646b90de9b381c6b5f560df4cbe0ed3cf7650ae741e4d \
+    --hash=sha256:aa68609c7454dbcaae60a01ff6b8df1de9b39fe6e50b1f6107ec81dcda624aa6
     # via pre-commit
 idna==3.3 \
     --hash=sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff \
@@ -188,9 +188,9 @@ pytest==6.2.5 \
     #   -r requirements/dev.in
     #   pytest-asyncio
     #   pytest-cov
-pytest-asyncio==0.16.0 \
-    --hash=sha256:5f2a21273c47b331ae6aa5b36087047b4899e40f03f18397c0e65fa5cca54e9b \
-    --hash=sha256:7496c5977ce88c34379df64a66459fe395cd05543f0a2f837016e7144391fcfb
+pytest-asyncio==0.17.0 \
+    --hash=sha256:b41c3ff0ec5b5b144459aa1c53a866f67278177f6d4f3ef6874bd864fc82834d \
+    --hash=sha256:c98e0e04ae5910bbcc219f52bdf871bd1d392f624ef77c49c236613c0b6d8ee1
     # via -r requirements/dev.in
 pytest-cov==3.0.0 \
     --hash=sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6 \
@@ -264,6 +264,10 @@ tomli==2.0.0 \
     # via
     #   coverage
     #   mypy
+types-pyyaml==6.0.3 \
+    --hash=sha256:6ea4eefa8579e0ce022f785a62de2bcd647fad4a81df5cf946fd67e4b059920b \
+    --hash=sha256:8b50294b55a9db89498cdc5a65b1b4545112b6cd1cf4465bd693d828b0282a17
+    # via -r requirements/dev.in
 typing-extensions==4.0.1 \
     --hash=sha256:4ca091dea149f945ec56afb48dae714f21e8692ef22a395223bcd328961b6a0e \
     --hash=sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b
