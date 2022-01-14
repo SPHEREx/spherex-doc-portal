@@ -1,0 +1,51 @@
+name: Release
+
+"on":
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Define the Docker tag
+        id: vars
+        run: echo ::set-output name=tag::$(scripts/docker-tag.sh "$GITHUB_REF")
+
+      - name: Print the tag
+        id: print
+        run: echo ${{ steps.vars.outputs.tag }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: token
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./  # use currently-checked out files
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/jsickcodes/spherex-doc-portal:${{ steps.vars.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
