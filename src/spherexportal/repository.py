@@ -9,6 +9,8 @@ from typing import List
 import yaml
 from pydantic import AnyHttpUrl, BaseModel, Field
 
+from spherexportal.config import config
+
 
 class SsdcMsModel(BaseModel):
     """Model for ssdc-ms document metadata."""
@@ -41,3 +43,15 @@ class DocumentRepository:
         return sorted(
             self._data.ssdc_ms, key=attrgetter("handle"), reverse=not ascending
         )
+
+
+class RepositoryDependency:
+    def __init__(self) -> None:
+        dataset = DatasetModel.from_yaml(config.dataset_path)
+        self._repo = DocumentRepository(dataset)
+
+    async def __call__(self) -> DocumentRepository:
+        return self._repo
+
+
+repository_dependency = RepositoryDependency()
