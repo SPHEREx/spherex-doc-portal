@@ -14,3 +14,4 @@ uvicorn[standard]
 safir
 pydantic
 PyYAML
+Jinja2
