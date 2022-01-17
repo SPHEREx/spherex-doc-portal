@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from operator import attrgetter
 from pathlib import Path
 from typing import List
 
@@ -28,3 +29,15 @@ class DatasetModel(BaseModel):
     def from_yaml(cls, path: Path) -> DatasetModel:
         data = yaml.safe_load(path.read_text())
         return cls.parse_obj(data)
+
+
+class DocumentRepository:
+    """A repository for access document metadata."""
+
+    def __init__(self, parsed_dataset: DatasetModel) -> None:
+        self._data = parsed_dataset
+
+    def get_ms_by_handle(self, ascending: bool = True) -> List[SsdcMsModel]:
+        return sorted(
+            self._data.ssdc_ms, key=attrgetter("handle"), reverse=not ascending
+        )
