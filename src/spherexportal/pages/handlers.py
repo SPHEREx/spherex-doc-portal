@@ -25,4 +25,5 @@ async def get_homepage(
     logger: BoundLogger = Depends(logger_dependency),
     repo: DocumentRepository = Depends(repository_dependency),
 ) -> _TemplateResponse:
-    return templates.TemplateResponse("index.html", {"request": request})
+    context = {"request": request, "ssdc_ms": repo.get_ms_by_handle()}
+    return templates.TemplateResponse("index.html", context)
