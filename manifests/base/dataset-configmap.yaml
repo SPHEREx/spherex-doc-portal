@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: "spherex-portal-dataset"
   labels:
-    app.kubernetes.io/name: "spherexportal"
+    app.kubernetes.io/name: "spherex-doc-portal"
 data:
   dataset.yaml: |
     ssdc-ms: []

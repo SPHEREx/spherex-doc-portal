@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "spherexportal"
+  name: "spherex-doc-portal"
   labels:
     app.kubernetes.io/name: "spherex-doc-portal"
 data:
@@ -11,3 +11,4 @@ data:
   SAFIR_PROFILE: "production"
   SAFIR_LOGGER: "spherexportal"
   SAFIR_LOG_LEVEL: "INFO"
+  PORTAL_DATASET_PATH: "/opt/spherex-doc-portal/dataset/"

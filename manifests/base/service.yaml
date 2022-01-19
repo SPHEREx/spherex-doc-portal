@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: "spherexportal"
+  name: "spherex-doc-portal"
   labels:
     app.kubernetes.io/name: "spherex-doc-portal"
 spec:
@@ -11,4 +11,4 @@ spec:
       port: 8080
       targetPort: "app"
   selector:
-    app.kubernetes.io/name: "spherexportal"
+    app.kubernetes.io/name: "spherex-doc-portal"
