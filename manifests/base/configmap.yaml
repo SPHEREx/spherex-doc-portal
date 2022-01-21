@@ -11,4 +11,4 @@ data:
   SAFIR_PROFILE: "production"
   SAFIR_LOGGER: "spherexportal"
   SAFIR_LOG_LEVEL: "INFO"
-  PORTAL_DATASET_PATH: "/opt/spherex-doc-portal/dataset/"
+  PORTAL_DATASET_PATH: "/opt/spherex-doc-portal/dataset/dataset.yaml"
