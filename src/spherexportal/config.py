@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import BaseSettings, Field
+from pydantic import BaseSettings, Field, FilePath
 
 __all__ = ["Config", "Profile", "LogLevel"]
 
@@ -38,6 +38,8 @@ class Config(BaseSettings):
     log_level: LogLevel = Field(LogLevel.INFO, env="SAFIR_LOG_LEVEL")
 
     logger_name: str = Field("noteburst", env="SAFIR_LOGGER")
+
+    dataset_path: FilePath = Field(..., env="PORTAL_DATASET_PATH")
 
 
 config = Config()

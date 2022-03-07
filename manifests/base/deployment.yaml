@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "spherexportal"
+  name: "spherex-doc-portal"
   labels:
     app.kubernetes.io/name: "spherex-doc-portal"
 spec:
@@ -19,19 +19,27 @@ spec:
         - name: app
           imagePullPolicy: "IfNotPresent"
           # Use images field in a Kustomization to set/update image tag
-          image: "lsstsqre/spherexportal"
+          image: "ghcr.io/jsickcodes/spherex-doc-portal"
           ports:
             - containerPort: 8080
               name: "app"
           envFrom:
             - configMapRef:
-                name: "spherexportal"
+                name: "spherex-doc-portal"
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - "all"
             readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: "dataset"
+              mountPath: "/opt/spherex-doc-portal/dataset/"
+              readOnly: true
+      volumes:
+        - name: "dataset"
+          configMap:
+            name: "spherex-portal-dataset"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

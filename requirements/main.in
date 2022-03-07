@@ -13,3 +13,5 @@ uvicorn[standard]
 # Other dependencies.
 safir
 pydantic
+PyYAML
+Jinja2

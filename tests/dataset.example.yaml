@@ -1,0 +1,7 @@
+ssdc-ms:
+  - handle: SSDC-MS-001
+    title: Document 1
+    url: https://spherex-docs.ipac.caltech.edu/ssdc-ms-001/
+  - handle: SSDC-MS-002
+    title: Document 2
+    url: https://spherex-docs.ipac.caltech.edu/ssdc-ms-001/
