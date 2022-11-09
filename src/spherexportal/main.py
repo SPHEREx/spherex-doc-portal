@@ -7,15 +7,18 @@ constructed when this module is loaded and is not deferred until a function is
 called.
 """
 
-from importlib.metadata import metadata
+from importlib.metadata import metadata, version
 
 from fastapi import FastAPI
 from safir.dependencies.http_client import http_client_dependency
 from safir.logging import configure_logging
 from safir.middleware.x_forwarded import XForwardedMiddleware
+from structlog import get_logger
 
 from .config import config
 from .pages.handlers import router
+from .repository import repository_dependency
+from .services.reposervice import RepositoryService
 
 __all__ = ["app", "config"]
 
@@ -28,15 +31,24 @@ configure_logging(
 
 app = FastAPI(
     title="SPHEREx Documentation Portal",
-    description=metadata("spherex-doc-portal").get("Summary", ""),
-    version=metadata("spherex-doc-portal").get("Version", "0.0.0"),
+    description=metadata("spherex-doc-portal")["Summary"],
+    version=version("spherex-doc-portal"),
 )
 app.include_router(router)
 
 
 @app.on_event("startup")
 async def startup_event() -> None:
+    logger = get_logger(__name__)
+    logger.bind(app_event="startup")
+
     app.add_middleware(XForwardedMiddleware)
+
+    repo = await repository_dependency()
+    reposervice = RepositoryService(repo=repo, logger=logger)
+    await reposervice.bootstrap_repo()
+
+    logger.info("Finished startup")
 
 
 @app.on_event("shutdown")

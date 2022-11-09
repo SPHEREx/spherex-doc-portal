@@ -15,7 +15,7 @@
     <h2>SSDC Pipeline Module Specifications</h2>
 
     <ul>
-      {% for doc in ssdc_ms %}
+      {% for doc in ssdc_ms.projects %}
       <li><a href="{{doc.url}}">{{ doc.handle }}</a> {{ doc.title }}</li>
       {% endfor %}
     </ul>
