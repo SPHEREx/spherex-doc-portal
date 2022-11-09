@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 
 
 @dataclass(kw_only=True)
@@ -128,3 +128,13 @@ class SpherexTrDocument(SpherexDocument):
     verification_ids: List[str]
 
     approval_str: Optional[str] = None
+
+
+T = TypeVar("T", bound="SpherexProject")
+
+
+@dataclass(kw_only=True)
+class SpherexCategory(Generic[T]):
+    """A collection of SpherexProject items for a specific category."""
+
+    projects: List[T] = field(default_factory=list)

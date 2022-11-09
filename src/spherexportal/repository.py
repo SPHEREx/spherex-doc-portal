@@ -2,55 +2,50 @@
 
 from __future__ import annotations
 
-from operator import attrgetter
-from pathlib import Path
-from typing import List
+from dataclasses import dataclass, field
 
-import yaml
-from pydantic import AnyHttpUrl, BaseModel, Field
-
-from spherexportal.config import config
-
-
-class SsdcMsModel(BaseModel):
-    """Model for ssdc-ms document metadata."""
-
-    handle: str
-
-    title: str
-
-    url: AnyHttpUrl
+from .domain import (
+    SpherexCategory,
+    SpherexDpDocument,
+    SpherexIfDocument,
+    SpherexMsDocument,
+    SpherexPmDocument,
+    SpherexTrDocument,
+)
 
 
-class DatasetModel(BaseModel):
-    """Model for the dataset file."""
+@dataclass(kw_only=True)
+class ProjectRepository:
+    """A repository for access documentation projects, organized around
+    project categories for fast access.
+    """
 
-    ssdc_ms: List[SsdcMsModel] = Field(..., alias="ssdc-ms")
+    ssdc_ms: SpherexCategory[SpherexMsDocument] = field(
+        default_factory=SpherexCategory
+    )
 
-    @classmethod
-    def from_yaml(cls, path: Path) -> DatasetModel:
-        data = yaml.safe_load(path.read_text())
-        return cls.parse_obj(data)
+    ssdc_pm: SpherexCategory[SpherexPmDocument] = field(
+        default_factory=SpherexCategory
+    )
 
+    ssdc_if: SpherexCategory[SpherexIfDocument] = field(
+        default_factory=SpherexCategory
+    )
 
-class DocumentRepository:
-    """A repository for access document metadata."""
+    ssdc_dp: SpherexCategory[SpherexDpDocument] = field(
+        default_factory=SpherexCategory
+    )
 
-    def __init__(self, parsed_dataset: DatasetModel) -> None:
-        self._data = parsed_dataset
-
-    def get_ms_by_handle(self, ascending: bool = True) -> List[SsdcMsModel]:
-        return sorted(
-            self._data.ssdc_ms, key=attrgetter("handle"), reverse=not ascending
-        )
+    ssdc_tr: SpherexCategory[SpherexTrDocument] = field(
+        default_factory=SpherexCategory
+    )
 
 
 class RepositoryDependency:
     def __init__(self) -> None:
-        dataset = DatasetModel.from_yaml(config.dataset_path)
-        self._repo = DocumentRepository(dataset)
+        self._repo = ProjectRepository()
 
-    async def __call__(self) -> DocumentRepository:
+    async def __call__(self) -> ProjectRepository:
         return self._repo
 
 
