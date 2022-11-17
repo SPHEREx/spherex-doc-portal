@@ -12,7 +12,7 @@ from pydantic import AnyHttpUrl, BaseModel, Field
 from spherexportal.config import config
 
 
-class SsdcMsModel(BaseModel):
+class Document(BaseModel):
     """Model for ssdc-ms document metadata."""
 
     handle: str
@@ -25,7 +25,9 @@ class SsdcMsModel(BaseModel):
 class DatasetModel(BaseModel):
     """Model for the dataset file."""
 
-    ssdc_ms: List[SsdcMsModel] = Field(..., alias="ssdc-ms")
+    ssdc_ms: List[Document] = Field(alias="ssdc-ms", default_factory=list)
+    ssdc_pm: List[Document] = Field(alias="ssdc-pm", default_factory=list)
+    ssdc_tr: List[Document] = Field(alias="ssdc-tr", default_factory=list)
 
     @classmethod
     def from_yaml(cls, path: Path) -> DatasetModel:
@@ -39,9 +41,19 @@ class DocumentRepository:
     def __init__(self, parsed_dataset: DatasetModel) -> None:
         self._data = parsed_dataset
 
-    def get_ms_by_handle(self, ascending: bool = True) -> List[SsdcMsModel]:
+    def get_ms_by_handle(self, ascending: bool = True) -> List[Document]:
         return sorted(
             self._data.ssdc_ms, key=attrgetter("handle"), reverse=not ascending
+        )
+
+    def get_pm_by_handle(self, ascending: bool = True) -> List[Document]:
+        return sorted(
+            self._data.ssdc_pm, key=attrgetter("handle"), reverse=not ascending
+        )
+
+    def get_tr_by_handle(self, ascending: bool = True) -> List[Document]:
+        return sorted(
+            self._data.ssdc_tr, key=attrgetter("handle"), reverse=not ascending
         )
 
 
