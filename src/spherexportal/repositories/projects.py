@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .domain import (
+from ..domain import (
     SpherexCategory,
     SpherexDpDocument,
     SpherexIfDocument,
@@ -16,7 +16,7 @@ from .domain import (
 
 @dataclass(kw_only=True)
 class ProjectRepository:
-    """A repository for access documentation projects, organized around
+    """A repository for accessing documentation projects, organized around
     project categories for fast access.
     """
 
@@ -39,14 +39,3 @@ class ProjectRepository:
     ssdc_tr: SpherexCategory[SpherexTrDocument] = field(
         default_factory=SpherexCategory
     )
-
-
-class RepositoryDependency:
-    def __init__(self) -> None:
-        self._repo = ProjectRepository()
-
-    async def __call__(self) -> ProjectRepository:
-        return self._repo
-
-
-repository_dependency = RepositoryDependency()

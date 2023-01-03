@@ -16,9 +16,10 @@ from ..domain import (
     SpherexCategory,
     SpherexMsDocument,
 )
+from .projects import ProjectRepository
 
 __all__ = [
-    "MockDataService",
+    "MockDataRepository",
     "MockDataModel",
     "SsdcMsModel",
 ]
@@ -52,18 +53,29 @@ class MockDataModel(BaseModel):
         return cls.parse_obj(data)
 
 
-class MockDataService:
-    """A service for working with the mock datasets."""
+class MockDataRepository:
+    """A repository that loads mock project data from a YAML file for testing.
+
+    See ``load_builtin_data`` to create a MockDataRepository from a file.
+    """
 
     def __init__(self, mock_data: MockDataModel) -> None:
         self._data = mock_data
 
     @classmethod
-    def load_builtin_data(cls) -> MockDataService:
-        """Load the built-in dataset.example.yaml file."""
+    def load_builtin_data(cls) -> MockDataRepository:
+        """Load the built-in dataset.example.yaml file.
+
+        If the ``PORTAL_DATASET_PATH`` environment variable is set, that path
+        is used instead.
+        """
         path = Path(os.getenv("PORTAL_DATASET_PATH") or "dataset.example.yaml")
         data = MockDataModel.from_yaml(path)
         return cls(data)
+
+    def bootstrap_project_repository(self, repo: ProjectRepository) -> None:
+        """Add mock data to the `ProjectRepository`."""
+        repo.ssdc_ms = self.load_ssdc_ms()
 
     def load_ssdc_ms(self) -> SpherexCategory[SpherexMsDocument]:
         """Transform the example SSDC-MS data into the repository format."""
