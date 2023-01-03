@@ -7,7 +7,7 @@ constructed when this module is loaded and is not deferred until a function is
 called.
 """
 
-from importlib.metadata import metadata
+from importlib.metadata import metadata, version
 
 from fastapi import FastAPI
 from safir.dependencies.http_client import http_client_dependency
@@ -28,8 +28,8 @@ configure_logging(
 
 app = FastAPI(
     title="SPHEREx Documentation Portal",
-    description=metadata("spherex-doc-portal").get("Summary", ""),
-    version=metadata("spherex-doc-portal").get("Version", "0.0.0"),
+    description=metadata("spherex-doc-portal")["Summary"],
+    version=version("spherex-doc-portal"),
 )
 app.include_router(router)
 

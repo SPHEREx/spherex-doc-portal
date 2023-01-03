@@ -12,6 +12,7 @@
 
     <a href="/logout">Logout</a>
 
+    {% if ssdc_ms|length > 0 %}
     <h2>SSDC Pipeline Module Specifications</h2>
 
     <ul>
@@ -19,5 +20,26 @@
       <li><a href="{{doc.url}}">{{ doc.handle }}</a> {{ doc.title }}</li>
       {% endfor %}
     </ul>
+    {% endif %}
+
+    {% if ssdc_tr|length > 0 %}
+    <h2>SSDC Test Reports</h2>
+
+    <ul>
+      {% for doc in ssdc_tr %}
+      <li><a href="{{doc.url}}">{{ doc.handle }}</a> {{ doc.title }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if ssdc_pm|length > 0 %}
+    <h2>SSDC Project Management</h2>
+
+    <ul>
+      {% for doc in ssdc_pm %}
+      <li><a href="{{doc.url}}">{{ doc.handle }}</a> {{ doc.title }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </body>
 </html>
