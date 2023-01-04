@@ -91,7 +91,9 @@ class SpherexMsDocument(SpherexDocument):
 
     project_contact_name: str
 
-    diagram_index: str
+    diagram_index: int
+
+    pipeline_level: int
 
     approval_str: Optional[str] = None
 

@@ -13,8 +13,6 @@ class ProjectService:
         self._logger = logger
         self._repo = repo
 
-    async def bootstrap_repo(self) -> None:
-        # FIXME Default to loading mock data right now; swap this out with a
-        # system for scraping the data from the LTD API and S3 bucket.
+    async def bootstrap_mock_repo(self) -> None:
         mockdata_service = MockDataRepository.load_builtin_data()
-        self._repo.ssdc_ms = mockdata_service.load_ssdc_ms()
+        mockdata_service.bootstrap_project_repository(self._repo)

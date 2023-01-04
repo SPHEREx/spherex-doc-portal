@@ -49,7 +49,7 @@ async def startup_event() -> None:
     project_service = ProjectService(repo=projects_repo, logger=logger)
     # FIXME Default to loading mock data right now; swap this out with a
     # system for scraping the data from the LTD API and S3 bucket.
-    await project_service.bootstrap_repo()
+    await project_service.bootstrap_mock_repo()
 
     logger.info("Finished startup")
 

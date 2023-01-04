@@ -25,25 +25,86 @@ __all__ = [
 ]
 
 
-class SsdcMsModel(BaseModel):
-    """The ssdc-ms field."""
+class BaseProjectModel(BaseModel):
+    """Common attributes for all projects."""
 
-    handle: str
     title: str
-    url: AnyHttpUrl
+    project_id: str
+    organization_id: str = "spherex"
+
+    @property
+    def url(self) -> str:
+        return f"https://spherex-docs.ipac.caltech.edu/{self.project_id}"
+
+
+class BaseGitHubProjectModel(BaseProjectModel):
+
+    github_url: AnyHttpUrl
     issues: int
     prs: int
+    commit_date: datetime
     tag: Optional[str]
-    tag_date: datetime
+    tag_date: Optional[datetime]
+
+    @property
+    def github_issues(self) -> GitHubIssueCount:
+        github_url = self.github_url.rstrip("/")
+        return GitHubIssueCount(
+            open_issue_count=self.issues,
+            open_pr_count=self.prs,
+            issue_url=f"{github_url}/issues",
+            pr_url=f"{github_url}/pulls",
+        )
+
+    @property
+    def github_release(self) -> Optional[GitHubRelease]:
+        if self.tag is not None and self.tag_date is not None:
+            return GitHubRelease(tag=self.tag, date_created=self.tag_date)
+        else:
+            return None
+
+
+class BaseSpherexDocumentModel(BaseGitHubProjectModel):
+
+    handle: str
     commit_date: datetime
     ssdc_author: str
+
+
+class SsdcMsModel(BaseSpherexDocumentModel):
+    """The ssdc-ms field. in the MockDataModel."""
+
     project_author: str
-    diagram_index: str
     approval: Optional[str]
     difficulty: str
+    pipeline_level: int
+    diagram_index: int
+
+    @property
+    def domain_model(self) -> SpherexMsDocument:
+        """Export as a domain model."""
+        return SpherexMsDocument(
+            url=self.url,
+            series="SSDC-MS",
+            handle=self.handle,
+            title=self.title,
+            project_id=self.project_id,
+            organization_id="spherex",
+            github_url=self.github_url,
+            github_issues=self.github_issues,
+            github_release=self.github_release,
+            latest_commit_datetime=self.commit_date,
+            ssdc_author_name=self.ssdc_author,
+            project_contact_name=self.project_author,
+            pipeline_level=self.pipeline_level,
+            diagram_index=self.diagram_index,
+            approval_str=self.approval,
+            difficulty=self.difficulty,
+        )
 
 
 class MockDataModel(BaseModel):
+    """A Pydantic model for the YAML mock dataset."""
 
     ssdc_ms: List[SsdcMsModel] = Field(..., alias="ssdc-ms")
 
@@ -51,6 +112,12 @@ class MockDataModel(BaseModel):
     def from_yaml(cls, path: Path) -> MockDataModel:
         data = yaml.safe_load(path.read_text())
         return cls.parse_obj(data)
+
+    @property
+    def ssdc_ms_projects(self) -> SpherexCategory[SpherexMsDocument]:
+        return SpherexCategory(
+            projects=[doc.domain_model for doc in self.ssdc_ms]
+        )
 
 
 class MockDataRepository:
@@ -75,47 +142,4 @@ class MockDataRepository:
 
     def bootstrap_project_repository(self, repo: ProjectRepository) -> None:
         """Add mock data to the `ProjectRepository`."""
-        repo.ssdc_ms = self.load_ssdc_ms()
-
-    def load_ssdc_ms(self) -> SpherexCategory[SpherexMsDocument]:
-        """Transform the example SSDC-MS data into the repository format."""
-        projects: List[SpherexMsDocument] = []
-        for mock_ssdcms in self._data.ssdc_ms:
-            if mock_ssdcms.tag is not None:
-                release = GitHubRelease(
-                    tag=mock_ssdcms.tag, date_created=mock_ssdcms.tag_date
-                )
-            else:
-                release = None
-            doc = SpherexMsDocument(
-                url=mock_ssdcms.url,
-                series="SSDC-MS",
-                handle=mock_ssdcms.handle,
-                title=mock_ssdcms.title,
-                project_id=mock_ssdcms.handle.lower(),
-                organization_id="spherex",
-                github_url=(
-                    f"https://github.com/SPHEREx/{mock_ssdcms.handle.lower()}"
-                ),
-                github_issues=GitHubIssueCount(
-                    open_issue_count=mock_ssdcms.issues,
-                    open_pr_count=mock_ssdcms.prs,
-                    issue_url=(
-                        "https://github.com/SPHEREx/"
-                        f"{mock_ssdcms.handle.lower()}/issues"
-                    ),
-                    pr_url=(
-                        "https://github.com/SPHEREx/"
-                        f"{mock_ssdcms.handle.lower()}/pulls"
-                    ),
-                ),
-                github_release=release,
-                latest_commit_datetime=mock_ssdcms.commit_date,
-                ssdc_author_name=mock_ssdcms.ssdc_author,
-                project_contact_name=mock_ssdcms.project_author,
-                diagram_index=mock_ssdcms.diagram_index,
-                approval_str=mock_ssdcms.approval,
-                difficulty=mock_ssdcms.difficulty,
-            )
-            projects.append(doc)
-        return SpherexCategory(projects=projects)
+        repo.ssdc_ms = self._data.ssdc_ms_projects

@@ -1,7 +1,8 @@
 ssdc-ms:
   - handle: SSDC-MS-001
     title: Document 1
-    url: https://spherex-docs.ipac.caltech.edu/ssdc-ms-001/
+    project_id: ssdc-ms-001
+    github_url: "https://github.com/SPHEREx/ssdc-ms-001"
     issues: 1
     prs: 5
     tag: "v1.0.0"
@@ -9,12 +10,14 @@ ssdc-ms:
     commit_date: "2022-11-03T00:00Z"
     ssdc_author: "SSDC Author"
     project_author: "Project Author"
-    diagram_index: "2"
+    pipeline_level: 1
+    diagram_index: 2
     approval: null
     difficulty: "high"
   - handle: SSDC-MS-002
     title: Document 2
-    url: https://spherex-docs.ipac.caltech.edu/ssdc-ms-001/
+    project_id: ssdc-ms-002
+    github_url: "https://github.com/SPHEREx/ssdc-ms-002"
     issues: 0
     prs: 0
     tag: "v1.0.0"
@@ -22,6 +25,7 @@ ssdc-ms:
     commit_date: "2022-11-02T00:00Z"
     ssdc_author: "SSDC Author"
     project_author: "Project Author"
-    diagram_index: "2"
+    pipeline_level: 1
+    diagram_index: 2
     approval: null
     difficulty: "high"
