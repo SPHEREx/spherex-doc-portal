@@ -127,9 +127,13 @@ class SpherexDpDocument(SpherexDocument):
 class SpherexTrDocument(SpherexDocument):
     """A SPHEREx Test Report, SSDC-TR."""
 
-    verification_ids: List[str]
-
     approval_str: Optional[str] = None
+
+    va_doors_id: Optional[str] = None
+
+    req_doors_id: Optional[str] = None
+
+    ipac_jira_id: Optional[str] = None
 
 
 T = TypeVar("T", bound="SpherexProject")

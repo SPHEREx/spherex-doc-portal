@@ -14,7 +14,11 @@ from ..domain import (
     GitHubIssueCount,
     GitHubRelease,
     SpherexCategory,
+    SpherexDpDocument,
+    SpherexIfDocument,
     SpherexMsDocument,
+    SpherexPmDocument,
+    SpherexTrDocument,
 )
 from .projects import ProjectRepository
 
@@ -72,7 +76,7 @@ class BaseSpherexDocumentModel(BaseGitHubProjectModel):
 
 
 class SsdcMsModel(BaseSpherexDocumentModel):
-    """The ssdc-ms field. in the MockDataModel."""
+    """The ssdc-ms field in the MockDataModel."""
 
     project_author: str
     approval: Optional[str]
@@ -103,10 +107,126 @@ class SsdcMsModel(BaseSpherexDocumentModel):
         )
 
 
+class SsdcPmModel(BaseSpherexDocumentModel):
+    """The ssdc-pm field in the MockDataModel."""
+
+    approval: Optional[str]
+
+    @property
+    def domain_model(self) -> SpherexPmDocument:
+        """Export as a domain model."""
+        return SpherexPmDocument(
+            url=self.url,
+            series="SSDC-PM",
+            handle=self.handle,
+            title=self.title,
+            project_id=self.project_id,
+            organization_id="spherex",
+            github_url=self.github_url,
+            github_issues=self.github_issues,
+            github_release=self.github_release,
+            latest_commit_datetime=self.commit_date,
+            ssdc_author_name=self.ssdc_author,
+            approval_str=self.approval,
+        )
+
+
+class SsdcIfModel(BaseSpherexDocumentModel):
+    """The ssdc-if field in the MockDataModel."""
+
+    approval: Optional[str]
+
+    interface_partner: str
+
+    @property
+    def domain_model(self) -> SpherexIfDocument:
+        """Export as a domain model."""
+        return SpherexIfDocument(
+            url=self.url,
+            series="SSDC-IF",
+            handle=self.handle,
+            title=self.title,
+            project_id=self.project_id,
+            organization_id="spherex",
+            github_url=self.github_url,
+            github_issues=self.github_issues,
+            github_release=self.github_release,
+            latest_commit_datetime=self.commit_date,
+            ssdc_author_name=self.ssdc_author,
+            approval_str=self.approval,
+            interface_partner_name=self.interface_partner,
+        )
+
+
+class SsdcDpModel(BaseSpherexDocumentModel):
+    """The ssdc-dp field in the MockDataModel."""
+
+    approval: Optional[str]
+
+    @property
+    def domain_model(self) -> SpherexDpDocument:
+        """Export as a domain model."""
+        return SpherexDpDocument(
+            url=self.url,
+            series="SSDC-IF",
+            handle=self.handle,
+            title=self.title,
+            project_id=self.project_id,
+            organization_id="spherex",
+            github_url=self.github_url,
+            github_issues=self.github_issues,
+            github_release=self.github_release,
+            latest_commit_datetime=self.commit_date,
+            ssdc_author_name=self.ssdc_author,
+            approval_str=self.approval,
+        )
+
+
+class SsdcTrModel(BaseSpherexDocumentModel):
+    """The ssdc-tr field in the MockDataModel."""
+
+    approval: Optional[str]
+
+    va_doors_id: Optional[str] = None
+
+    req_doors_id: Optional[str] = None
+
+    ipac_jira_id: Optional[str] = None
+
+    @property
+    def domain_model(self) -> SpherexTrDocument:
+        """Export as a domain model."""
+        return SpherexTrDocument(
+            url=self.url,
+            series="SSDC-TR",
+            handle=self.handle,
+            title=self.title,
+            project_id=self.project_id,
+            organization_id="spherex",
+            github_url=self.github_url,
+            github_issues=self.github_issues,
+            github_release=self.github_release,
+            latest_commit_datetime=self.commit_date,
+            ssdc_author_name=self.ssdc_author,
+            approval_str=self.approval,
+            va_doors_id=self.va_doors_id,
+            req_doors_id=self.req_doors_id,
+            ipac_jira_id=self.ipac_jira_id,
+        )
+
+
 class MockDataModel(BaseModel):
     """A Pydantic model for the YAML mock dataset."""
 
-    ssdc_ms: List[SsdcMsModel] = Field(..., alias="ssdc-ms")
+    ssdc_ms: List[SsdcMsModel] = Field(alias="ssdc-ms", default_factory=list)
+
+    ssdc_pm: List[SsdcPmModel] = Field(alias="ssdc-pm", default_factory=list)
+
+    ssdc_if: List[SsdcIfModel] = Field(alias="ssdc-if", default_factory=list)
+
+    ssdc_dp: List[SsdcDpModel] = Field(alias="ssdc-dp", default_factory=list)
+
+    ssdc_tr: List[SsdcTrModel] = Field(alias="ssdc-tr", default_factory=list)
 
     @classmethod
     def from_yaml(cls, path: Path) -> MockDataModel:
@@ -117,6 +237,30 @@ class MockDataModel(BaseModel):
     def ssdc_ms_projects(self) -> SpherexCategory[SpherexMsDocument]:
         return SpherexCategory(
             projects=[doc.domain_model for doc in self.ssdc_ms]
+        )
+
+    @property
+    def ssdc_pm_projects(self) -> SpherexCategory[SpherexPmDocument]:
+        return SpherexCategory(
+            projects=[doc.domain_model for doc in self.ssdc_pm]
+        )
+
+    @property
+    def ssdc_if_projects(self) -> SpherexCategory[SpherexIfDocument]:
+        return SpherexCategory(
+            projects=[doc.domain_model for doc in self.ssdc_if]
+        )
+
+    @property
+    def ssdc_dp_projects(self) -> SpherexCategory[SpherexDpDocument]:
+        return SpherexCategory(
+            projects=[doc.domain_model for doc in self.ssdc_dp]
+        )
+
+    @property
+    def ssdc_tr_projects(self) -> SpherexCategory[SpherexTrDocument]:
+        return SpherexCategory(
+            projects=[doc.domain_model for doc in self.ssdc_tr]
         )
 
 
@@ -143,3 +287,7 @@ class MockDataRepository:
     def bootstrap_project_repository(self, repo: ProjectRepository) -> None:
         """Add mock data to the `ProjectRepository`."""
         repo.ssdc_ms = self._data.ssdc_ms_projects
+        repo.ssdc_pm = self._data.ssdc_pm_projects
+        repo.ssdc_if = self._data.ssdc_if_projects
+        repo.ssdc_dp = self._data.ssdc_dp_projects
+        repo.ssdc_tr = self._data.ssdc_tr_projects
