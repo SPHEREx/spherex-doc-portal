@@ -10,6 +10,7 @@ from ..domain import (
     SpherexIfDocument,
     SpherexMsDocument,
     SpherexPmDocument,
+    SpherexTnDocument,
     SpherexTrDocument,
 )
 
@@ -37,5 +38,9 @@ class ProjectRepository:
     )
 
     ssdc_tr: SpherexCategory[SpherexTrDocument] = field(
+        default_factory=SpherexCategory
+    )
+
+    ssdc_tn: SpherexCategory[SpherexTnDocument] = field(
         default_factory=SpherexCategory
     )

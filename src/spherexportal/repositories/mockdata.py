@@ -18,6 +18,7 @@ from ..domain import (
     SpherexIfDocument,
     SpherexMsDocument,
     SpherexPmDocument,
+    SpherexTnDocument,
     SpherexTrDocument,
 )
 from .projects import ProjectRepository
@@ -215,6 +216,27 @@ class SsdcTrModel(BaseSpherexDocumentModel):
         )
 
 
+class SsdcTnModel(BaseSpherexDocumentModel):
+    """The ssdc-tn field in the MockDataModel."""
+
+    @property
+    def domain_model(self) -> SpherexTnDocument:
+        """Export as a domain model."""
+        return SpherexTnDocument(
+            url=self.url,
+            series="SSDC-TN",
+            handle=self.handle,
+            title=self.title,
+            project_id=self.project_id,
+            ssdc_author_name=self.ssdc_author,
+            organization_id="spherex",
+            github_url=self.github_url,
+            github_issues=self.github_issues,
+            github_release=self.github_release,
+            latest_commit_datetime=self.commit_date,
+        )
+
+
 class MockDataModel(BaseModel):
     """A Pydantic model for the YAML mock dataset."""
 
@@ -227,6 +249,8 @@ class MockDataModel(BaseModel):
     ssdc_dp: List[SsdcDpModel] = Field(alias="ssdc-dp", default_factory=list)
 
     ssdc_tr: List[SsdcTrModel] = Field(alias="ssdc-tr", default_factory=list)
+
+    ssdc_tn: List[SsdcTnModel] = Field(alias="ssdc-tn", default_factory=list)
 
     @classmethod
     def from_yaml(cls, path: Path) -> MockDataModel:
@@ -263,6 +287,12 @@ class MockDataModel(BaseModel):
             projects=[doc.domain_model for doc in self.ssdc_tr]
         )
 
+    @property
+    def ssdc_tn_projects(self) -> SpherexCategory[SpherexTnDocument]:
+        return SpherexCategory(
+            projects=[doc.domain_model for doc in self.ssdc_tn]
+        )
+
 
 class MockDataRepository:
     """A repository that loads mock project data from a YAML file for testing.
@@ -291,3 +321,4 @@ class MockDataRepository:
         repo.ssdc_if = self._data.ssdc_if_projects
         repo.ssdc_dp = self._data.ssdc_dp_projects
         repo.ssdc_tr = self._data.ssdc_tr_projects
+        repo.ssdc_tn = self._data.ssdc_tn_projects

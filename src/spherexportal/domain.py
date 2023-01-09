@@ -136,6 +136,11 @@ class SpherexTrDocument(SpherexDocument):
     ipac_jira_id: Optional[str] = None
 
 
+@dataclass(kw_only=True)
+class SpherexTnDocument(SpherexDocument):
+    """A SPHEREx Technical Note, SSDC-TN."""
+
+
 T = TypeVar("T", bound="SpherexProject")
 
 
