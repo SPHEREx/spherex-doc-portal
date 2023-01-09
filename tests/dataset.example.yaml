@@ -29,3 +29,80 @@ ssdc-ms:
     diagram_index: 2
     approval: null
     difficulty: "high"
+ssdc-pm:
+  - handle: SSDC-PM-000
+    title: "Software Deletion Plan"
+    project_id: "ssdc-pm-000"
+    github_url: "https://github.com/SPHEREx/ssdc-pm-000"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"
+    ssdc_author: "SSDC Author"
+    project_author: "Project Author"
+    approval: null
+ssdc-if:
+  - handle: SSDC-IF-000
+    title: "Operational Interface Agreement with the Science Team"
+    project_id: "ssdc-if-000"
+    github_url: "https://github.com/SPHEREx/ssdc-if-000"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"
+    ssdc_author: "SSDC Author"
+    interface_partner: "IPAC"
+    approval: null
+ssdc-dp:
+  - handle: SSDC-DP-000
+    title: "Level 7 Image Data Format"
+    project_id: "ssdc-dp-000"
+    github_url: "https://github.com/SPHEREx/ssdc-dp-000"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"
+    ssdc_author: "SSDC Author"
+    approval: null
+ssdc-tr:
+  - handle: SSDC-TR-000
+    title: "Software Flammability Test (OEM)"
+    project_id: "ssdc-tr-000"
+    github_url: "https://github.com/SPHEREx/ssdc-tr-000"
+    va_doors_id: "123456"
+    ipac_jira_id: "SVV-999"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"
+    ssdc_author: "SSDC Author"
+    approval: null
+  - handle: SSDC-TR-001
+    title: "Data Release Frequency (RCM)"
+    project_id: "ssdc-tr-001"
+    github_url: "https://github.com/SPHEREx/ssdc-tr-001"
+    req_doors_id: "123456"
+    ipac_jira_id: "SVV-998"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"
+    ssdc_author: "SSDC Author"
+    approval: null
+  - handle: SSDC-TR-002
+    title: "Initial NexTEra File Ingest Test"
+    project_id: "ssdc-tr-002"
+    github_url: "https://github.com/SPHEREx/ssdc-tr-002"
+    ipac_jira_id: "SVV-997"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"
+    ssdc_author: "SSDC Author"
+    approval: null
