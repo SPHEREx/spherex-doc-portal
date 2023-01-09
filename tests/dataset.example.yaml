@@ -117,3 +117,14 @@ ssdc-tn:
     tag: "v1.1"
     tag_date: "2022-11-02T00:00Z"
     commit_date: "2022-11-02T00:00Z"
+ssdc-op:
+  - handle: SSDC-OP-000
+    title: "Daily Pipeline Status Checks"
+    project_id: "ssdc-op-000"
+    github_url: "https://github.com/SPHEREx/ssdc-op-000"
+    ssdc_author: "SSDC Author"
+    issues: 1
+    prs: 1
+    tag: "v1.1"
+    tag_date: "2022-11-02T00:00Z"
+    commit_date: "2022-11-02T00:00Z"

@@ -141,6 +141,11 @@ class SpherexTnDocument(SpherexDocument):
     """A SPHEREx Technical Note, SSDC-TN."""
 
 
+@dataclass(kw_only=True)
+class SpherexOpDocument(SpherexDocument):
+    """A SPHEREx Operations Note, SSDC-OP."""
+
+
 T = TypeVar("T", bound="SpherexProject")
 
 
