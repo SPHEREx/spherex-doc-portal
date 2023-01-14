@@ -16,9 +16,9 @@ from safir.middleware.x_forwarded import XForwardedMiddleware
 from structlog import get_logger
 
 from .config import config
+from .dependencies.projects import projects_dependency
 from .pages.handlers import router
-from .repository import repository_dependency
-from .services.reposervice import RepositoryService
+from .services.projectservice import ProjectService
 
 __all__ = ["app", "config"]
 
@@ -44,9 +44,12 @@ async def startup_event() -> None:
 
     app.add_middleware(XForwardedMiddleware)
 
-    repo = await repository_dependency()
-    reposervice = RepositoryService(repo=repo, logger=logger)
-    await reposervice.bootstrap_repo()
+    projects_repo = await projects_dependency()
+
+    project_service = ProjectService(repo=projects_repo, logger=logger)
+    # FIXME Default to loading mock data right now; swap this out with a
+    # system for scraping the data from the LTD API and S3 bucket.
+    await project_service.bootstrap_mock_repo()
 
     logger.info("Finished startup")
 

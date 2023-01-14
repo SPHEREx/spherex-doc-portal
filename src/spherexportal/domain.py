@@ -91,7 +91,9 @@ class SpherexMsDocument(SpherexDocument):
 
     project_contact_name: str
 
-    diagram_index: str
+    diagram_index: int
+
+    pipeline_level: int
 
     approval_str: Optional[str] = None
 
@@ -125,9 +127,23 @@ class SpherexDpDocument(SpherexDocument):
 class SpherexTrDocument(SpherexDocument):
     """A SPHEREx Test Report, SSDC-TR."""
 
-    verification_ids: List[str]
-
     approval_str: Optional[str] = None
+
+    va_doors_id: Optional[str] = None
+
+    req_doors_id: Optional[str] = None
+
+    ipac_jira_id: Optional[str] = None
+
+
+@dataclass(kw_only=True)
+class SpherexTnDocument(SpherexDocument):
+    """A SPHEREx Technical Note, SSDC-TN."""
+
+
+@dataclass(kw_only=True)
+class SpherexOpDocument(SpherexDocument):
+    """A SPHEREx Operations Note, SSDC-OP."""
 
 
 T = TypeVar("T", bound="SpherexProject")
