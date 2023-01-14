@@ -8,8 +8,10 @@ called.
 """
 
 from importlib.metadata import metadata, version
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from safir.dependencies.http_client import http_client_dependency
 from safir.logging import configure_logging
 from safir.middleware.x_forwarded import XForwardedMiddleware
@@ -35,6 +37,9 @@ app = FastAPI(
     version=version("spherex-doc-portal"),
 )
 app.include_router(router)
+
+static_path = Path(__file__).parent.joinpath("static")
+app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 
 @app.on_event("startup")
