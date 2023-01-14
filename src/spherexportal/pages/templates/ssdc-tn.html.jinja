@@ -1,0 +1,15 @@
+{% extends "base.html.jinja" %}
+
+{% block title %}SPHEREx SSDC-TN Documents{% endblock %}
+
+{% block content %}
+<h1>SSDC-TN</h1>
+
+<p>SPHEREx Technical Notes</p>
+
+<ul>
+    {% for doc in category.projects %}
+    <li>{{doc.handle}} &mdash; {{ doc.title }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
