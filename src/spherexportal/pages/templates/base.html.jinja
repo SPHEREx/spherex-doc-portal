@@ -12,11 +12,24 @@
 </head>
 
 <body>
-  {% block page_header %}
-  {% include "components/header.html.jinja" %}
-  {% endblock page_header %}
-  {% block content %}
-  {% endblock content %}
+  <div class="page">
+    {% block page_header %}
+    <div class="page__header">
+      {% include "components/header.html.jinja" %}
+    </div>
+    {% endblock page_header %}
+
+    {% block page_mainnav %}
+    <div class="page__mainnav">
+      {% include "components/mainnav.html.jinja" %}
+    </div>
+    {% endblock page_mainnav %}
+
+    <main class="page__content">
+      {% block content %}
+      {% endblock content %}
+    </main>
+  </div>
 </body>
 
 </html>
