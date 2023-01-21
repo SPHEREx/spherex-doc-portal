@@ -1,0 +1,5 @@
+.tox
+*.md
+**/*.md
+src/spherexportal/static
+manifest/base

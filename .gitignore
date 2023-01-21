@@ -1,3 +1,10 @@
+# node and webpack build products
+src/spherexportal/static/spherex.css
+src/spherexportal/static/spherex.css.map
+src/spherexportal/static/spherex.js
+src/spherexportal/static/spherex.js.map
+node_modules
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
