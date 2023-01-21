@@ -1,0 +1,34 @@
+/*
+ * Page header component styles.
+ */
+
+.spherex-header {
+  width: 100%;
+  margin: 0;
+  padding: var(--spherex-space-sm-fixed);
+
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--spherex-space-lg-fixed);
+}
+
+.spherex-header__logo img {
+  width: 8rem;
+}
+
+.spherex-header__title {
+  text-decoration: none;
+  color: var(--spherex-c-text);
+  margin-right: auto;
+  font-size: 2rem;
+}
+
+.spherex-header__title:hover {
+  color: var(--spherex-c-primary-600);
+}
+
+.spherex-header__logout {
+  justify-self: flex-end;
+}
