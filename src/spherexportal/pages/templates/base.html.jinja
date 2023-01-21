@@ -12,7 +12,9 @@
 </head>
 
 <body>
-  <img src="{{url_for('static', path='spherex-logo.png')}}">
+  {% block page_header %}
+  {% include "components/header.html.jinja" %}
+  {% endblock page_header %}
   {% block content %}
   {% endblock content %}
 </body>
