@@ -1,15 +1,39 @@
 {% extends "base.html.jinja" %}
 
-{% block title %}SPHEREx SSDC-MS Documents{% endblock %}
+{% block title %}SPHEREx Module Specifications (SSDC-MS){% endblock %}
 
 {% block content %}
-<h1>SSDC-MS</h1>
+<h1>Module Specifications (SSDC-MS)</h1>
 
-<p>SPHEREx Pipeline Module Specifications</p>
-
-<ul>
-    {% for doc in category.projects %}
-    <li>{{doc.handle}} &mdash; {{ doc.title }}</li>
+{% if category.projects %}
+<table class="sortable asc spherex-project-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Diagram</th>
+      <th>SSDC Author</th>
+      <th>Project Author</th>
+      <th>Approval</th>
+      <th>Difficulty</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in category.projects|sort(attribute="diagram_ref") %}
+    <tr>
+      <td>{{ doc.handle }}</td>
+      <td>{{ doc.title }}</td>
+      <td data-sort="{{doc.sortable_diagram_ref}}">{{ doc.diagram_ref }}</td>
+      <td>{{ doc.ssdc_author_name }}</td>
+      <td>{{ doc.project_contact_name }}</td>
+      <td>{{ doc.approval_str }}</td>
+      <td>{{ doc.difficulty }}</td>
+    </tr>
     {% endfor %}
-</ul>
+  </tbody>
+</table>
+
+{% else %}
+<p>No documents available.</p>
+{% endif %}
 {% endblock %}

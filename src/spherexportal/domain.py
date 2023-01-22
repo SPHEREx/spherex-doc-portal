@@ -99,6 +99,14 @@ class SpherexMsDocument(SpherexDocument):
 
     difficulty: str
 
+    @property
+    def diagram_ref(self) -> str:
+        return f"L{self.pipeline_level}.{self.diagram_index}"
+
+    @property
+    def sortable_diagram_ref(self) -> str:
+        return f"L{self.pipeline_level}.{self.diagram_index:02d}"
+
 
 @dataclass(kw_only=True)
 class SpherexPmDocument(SpherexDocument):

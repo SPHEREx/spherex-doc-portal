@@ -26,7 +26,7 @@ ssdc-ms:
     ssdc_author: 'SSDC Author'
     project_author: 'Project Author'
     pipeline_level: 1
-    diagram_index: 2
+    diagram_index: 1
     approval: null
     difficulty: 'high'
 ssdc-pm:
