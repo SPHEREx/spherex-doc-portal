@@ -6,10 +6,13 @@
   text-align: left;
   font-size: 0.9rem;
   border-spacing: 0;
+  table-layout: auto;
+  width: 100%;
 }
 
 .spherex-project-table th, .spherex-project-table td {
   padding: 5px;
+  vertical-align: baseline;
 }
 
 .spherex-project-table th {
@@ -19,4 +22,18 @@
 
 .spherex-project-table tbody tr:nth-child(odd) {
   background-color: var(--spherex-c-neutral-100);
+}
+
+.spherex-project-table a {
+  text-decoration: none;
+}
+
+.spherex-project-table a:hover {
+  text-decoration: underline;
+}
+
+.spherex-project-table ul {
+ margin: 0;
+ padding: 0;
+ list-style: none;
 }

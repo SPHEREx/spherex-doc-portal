@@ -1,15 +1,33 @@
 {% extends "base.html.jinja" %}
 
-{% block title %}SPHEREx SSDC-PM Documents{% endblock %}
+{% block title %}SPHEREx Project Management (SSDC-PM){% endblock %}
 
 {% block content %}
-<h1>SSDC-PM</h1>
+<h1>Project Management (SSDC-PM)</h1>
 
-<p>SPHEREx Project Management Documents</p>
+{% if category.projects %}
+<table class="sortable asc spherex-project-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Project Author</th>
+            <th>Approval</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doc in category.projects|sort(attribute="handle") %}
+        <tr>
+            <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
+            <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>
+            <td>{{ doc.ssdc_author_name }}</td>
+            <td>{% if doc.approval_str %}{{ doc.approval_str }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-<ul>
-    {% for doc in category.projects %}
-    <li>{{doc.handle}} &mdash; {{ doc.title }}</li>
-    {% endfor %}
-</ul>
+{% else %}
+<p>No documents available.</p>
+{% endif %}
 {% endblock %}
