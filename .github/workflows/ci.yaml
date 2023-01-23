@@ -87,6 +87,6 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.repository == 'SPHEREx/spherex-doc-portal' }}
           tags: |
-            ghcr.io/SPHEREx/spherex-doc-portal:${{ steps.vars.outputs.tag }}
+            ghcr.io/spherex/spherex-doc-portal:${{ steps.vars.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
