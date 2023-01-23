@@ -85,8 +85,8 @@ jobs:
         with:
           context: ./ # use currently-checked out files
           file: ./Dockerfile
-          push: ${{ github.repository == 'jsickcodes/spherex-doc-portal' }}
+          push: ${{ github.repository == 'SPHEREx/spherex-doc-portal' }}
           tags: |
-            ghcr.io/jsickcodes/spherex-doc-portal:${{ steps.vars.outputs.tag }}
+            ghcr.io/SPHEREx/spherex-doc-portal:${{ steps.vars.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
