@@ -1,6 +1,6 @@
 {% extends "base.html.jinja" %}
 
-{% block title %}SPHEREx Module Specifications (SSDC-MS){% endblock %}
+{% block meta_title %}SPHEREx Module Specifications (SSDC-MS){% endblock %}
 
 {% block content %}
 <h1>Module Specifications (SSDC-MS)</h1>
@@ -17,14 +17,14 @@
       <th>ID</th>
       <th>Title</th>
       <th>Diagram</th>
-      <th>SSDC Author</th>
-      <th>Project Author</th>
+      <th>SSDC Lead</th>
+      <th>Project POC</th>
       <th>Approval</th>
       <th>Difficulty</th>
     </tr>
   </thead>
   <tbody>
-    {% for doc in category.projects|sort(attribute="diagram_ref") %}
+    {% for doc in category.projects|sort(attribute="sortable_diagram_ref") %}
     <tr>
       <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
       <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>
