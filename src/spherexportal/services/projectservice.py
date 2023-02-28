@@ -14,5 +14,5 @@ class ProjectService:
         self._repo = repo
 
     async def bootstrap_mock_repo(self) -> None:
-        mockdata_service = MockDataRepository.load_builtin_data()
-        mockdata_service.bootstrap_project_repository(self._repo)
+        mockdata_repo = MockDataRepository.load_builtin_data()
+        mockdata_repo.bootstrap_project_repository(self._repo)
