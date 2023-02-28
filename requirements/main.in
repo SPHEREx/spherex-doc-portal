@@ -15,3 +15,5 @@ safir
 pydantic
 PyYAML
 Jinja2
+cachetools
+asyncache

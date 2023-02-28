@@ -11,6 +11,16 @@ anyio==3.6.2 \
     #   httpcore
     #   starlette
     #   watchfiles
+asyncache==0.3.1 \
+    --hash=sha256:9a1e60a75668e794657489bdea6540ee7e3259c483517b934670db7600bf5035 \
+    --hash=sha256:ef20a1024d265090dd1e0785c961cf98b9c32cc7d9478973dcf25ac1b80011f5
+    # via -r requirements/main.in
+cachetools==5.3.0 \
+    --hash=sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14 \
+    --hash=sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4
+    # via
+    #   -r requirements/main.in
+    #   asyncache
 certifi==2022.12.7 \
     --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
     --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18

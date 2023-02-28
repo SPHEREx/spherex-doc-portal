@@ -16,3 +16,4 @@ pytest
 pytest-asyncio
 pytest-cov
 types-PyYAML
+types-cachetools
