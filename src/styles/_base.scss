@@ -1,0 +1,14 @@
+/*
+ * Base styling for html elements.
+ */
+
+body {
+  font-family: var(--spherex-font-family);
+  line-height: var(--spherex-line-height);
+  color: var(--spherex-c-text);
+  background-color: var(--spherex-c-background);
+}
+
+h1 {
+  margin-top: 0;
+}

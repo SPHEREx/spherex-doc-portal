@@ -1,0 +1,7 @@
+<header class="spherex-header">
+  <a class="spherex-header__logo" href="{{ request.app.url_path_for('get_homepage')}}">
+    <img src="{{ request.app.url_path_for('static', path='spherex-logo.png')}}">
+  </a>
+  <a class="spherex-header__title" href="{{ request.app.url_path_for('get_homepage')}}">SPHEREx Documentation</a>
+  <a class="button__secondary spherex-header__logout" href="/logout">Logout</a>
+</header>

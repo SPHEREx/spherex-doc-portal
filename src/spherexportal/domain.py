@@ -99,6 +99,14 @@ class SpherexMsDocument(SpherexDocument):
 
     difficulty: str
 
+    @property
+    def diagram_ref(self) -> str:
+        return f"L{self.pipeline_level}.{self.diagram_index}"
+
+    @property
+    def sortable_diagram_ref(self) -> str:
+        return f"L{self.pipeline_level}.{self.diagram_index:02d}"
+
 
 @dataclass(kw_only=True)
 class SpherexPmDocument(SpherexDocument):
@@ -134,6 +142,21 @@ class SpherexTrDocument(SpherexDocument):
     req_doors_id: Optional[str] = None
 
     ipac_jira_id: Optional[str] = None
+
+    @property
+    def has_verification_ids(self) -> bool:
+        return (
+            (self.va_doors_id is not None)
+            | (self.req_doors_id is not None)
+            | (self.ipac_jira_id is not None)
+        )
+
+    @property
+    def ipac_jira_url(self) -> str:
+        if self.ipac_jira_id:
+            return f"https://jira.ipac.caltech.edu/browse/{self.ipac_jira_id}"
+        else:
+            return ""
 
 
 @dataclass(kw_only=True)

@@ -1,0 +1,52 @@
+{% extends "base.html.jinja" %}
+
+{% block meta_title %}SPHEREx Test Reports (SSDC-TR){% endblock %}
+
+{% block content %}
+<h1>Test Reports (SSDC-TR)</h1>
+
+{% if category.projects %}
+<table class="sortable asc spherex-project-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Verification IDs</th>
+      <th>SSDC Lead</th>
+      <th>Approval</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in category.projects|sort(attribute="handle") %}
+    <tr>
+      <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
+      <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>
+      {% if doc.has_verification_ids %}
+      <td>
+        <ul>
+          {% if doc.va_doors_id %}
+          <li>DOORS VA {{ doc.va_doors_id }}</li>
+          {% endif%}
+          {% if doc.req_doors_id %}
+          <li>DOORS REQ {{ doc.req_doors_id }}</li>
+          {% endif%}
+          {% if doc.ipac_jira_id %}
+          <li><a href="{{ doc.ipac_jira_url }}">{{ doc.ipac_jira_id }}</a></li>
+          {% endif%}
+        </ul>
+      </td>
+      {% else %}
+      <td></td>
+      {% endif %}
+      <td>{{ doc.ssdc_author_name }}</td>
+      <td>{% if doc.approval_str %}{{ doc.approval_str }}{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p>No documents available.</p>
+{% endif %}
+
+{% endblock %}

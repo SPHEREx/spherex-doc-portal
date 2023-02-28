@@ -1,0 +1,30 @@
+<nav class="main-nav">
+  <ul>
+    <li>Documents
+      <ul>
+        <li><a {{ 'class=active' if current_path=='/ssdc-ms' }}
+            href="{{ request.app.url_path_for('get_ssdc_ms') }}">Module
+            Specifications (MS)</a></li>
+        <li><a {{ 'class=active' if current_path=='/ssdc-pm' }}
+            href="{{ request.app.url_path_for('get_ssdc_pm') }}">Project Management
+            (PM)</a></li>
+        <li><a {{ 'class=active' if current_path=='/ssdc-if' }}
+            href="{{ request.app.url_path_for('get_ssdc_if') }}">Interfaces (IF)</a>
+        </li>
+        <li><a {{ 'class=active' if current_path=='/ssdc-dp' }}
+            href="{{ request.app.url_path_for('get_ssdc_dp') }}">Data Products
+            (DP)</a></li>
+        <li><a {{ 'class=active' if current_path=='/ssdc-tr' }} href="{{request.app.url_path_for('get_ssdc_tr') }}">Test
+            Reports (TR)</a>
+        </li>
+        <li><a {{ 'class=active' if current_path=='/ssdc-tn' }}
+            href="{{request.app.url_path_for('get_ssdc_tn') }}">Technical Notes
+            (TN)</a></li>
+        <li><a {{ 'class=active' if current_path=='/ssdc-op' }}
+            href="{{request.app.url_path_for('get_ssdc_op') }}">Operations Manuals
+            (OP)</a></li>
+      </ul>
+    </li>
+    <li>Software</li>
+  </ul>
+</nav>

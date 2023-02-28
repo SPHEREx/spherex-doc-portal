@@ -1,12 +1,12 @@
 name: CI
 
-"on":
+'on':
   pull_request: {}
   push:
     branches:
-      - "main"
+      - 'main'
     tags:
-      - "*"
+      - '*'
 
 jobs:
   test:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         python:
-          - "3.10"
+          - '3.10'
 
     steps:
       - uses: actions/checkout@v3
@@ -25,11 +25,21 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - name: npm install and build
+        run: |
+          npm install
+          npm run build
+
       - name: Run tox
         uses: lsst-sqre/run-tox@v1
         with:
           python-version: ${{ matrix.python }}
-          tox-envs: "lint,typing,py,coverage-report"
+          tox-envs: 'lint,typing,py,coverage-report'
 
   build:
     runs-on: ubuntu-latest
@@ -39,6 +49,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - name: npm install and build
+        run: |
+          npm install
+          npm run build
 
       - name: Define the Docker tag
         id: vars
@@ -63,10 +83,10 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ./  # use currently-checked out files
+          context: ./ # use currently-checked out files
           file: ./Dockerfile
-          push: ${{ github.repository == 'jsickcodes/spherex-doc-portal' }}
+          push: ${{ github.repository == 'SPHEREx/spherex-doc-portal' }}
           tags: |
-            ghcr.io/jsickcodes/spherex-doc-portal:${{ steps.vars.outputs.tag }}
+            ghcr.io/spherex/spherex-doc-portal:${{ steps.vars.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

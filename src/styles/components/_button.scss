@@ -1,0 +1,16 @@
+/*
+ * Button component styles
+ */
+
+.button__secondary {
+  color: var(--spherex-c-primary-600);
+  border: 2px solid var(--spherex-c-primary-600);
+  border-radius: 5px;
+  text-decoration: none;
+  padding: 5px 10px;
+}
+
+.button__secondary:hover {
+  color: var(--spherex-c-primary-400);
+  border: 2px solid var(--spherex-c-primary-400);
+}

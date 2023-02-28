@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>{% block meta_title %}SPHEREx Documentation{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='spherex.css')}}" />
+  {% if current_path %}
+  <link rel="canonical" href="https://spherex-docs.ipac.caltech.edu{{ current_path }}" />
+  {% endif %}
+</head>
+
+<body>
+  <div class="page">
+    {% block page_header %}
+    <div class="page__header">
+      {% include "components/header.html.jinja" %}
+    </div>
+    {% endblock page_header %}
+
+    {% block page_mainnav %}
+    <div class="page__mainnav">
+      {% include "components/mainnav.html.jinja" %}
+    </div>
+    {% endblock page_mainnav %}
+
+    <main class="page__content">
+      {% block content %}
+      {% endblock content %}
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/tofsjonas/sortable/sortable.min.js"></script>
+</body>
+
+</html>
