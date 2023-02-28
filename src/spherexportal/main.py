@@ -41,13 +41,13 @@ app.include_router(router)
 static_path = Path(__file__).parent.joinpath("static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
+app.add_middleware(XForwardedMiddleware)
+
 
 @app.on_event("startup")
 async def startup_event() -> None:
     logger = get_logger(__name__)
     logger.bind(app_event="startup")
-
-    app.add_middleware(XForwardedMiddleware)
 
     projects_repo = await projects_dependency()
 
