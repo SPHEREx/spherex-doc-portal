@@ -63,6 +63,29 @@ class Config(BaseSettings):
         env="PORTAL_LTD_API_PASSWORD",
     )
 
+    # Ideally this should come from the LTD API, since the bucket's name is
+    # declared there, but it's current absent. us-west-1 is where we're
+    # deploying SPHEREx's LTD.
+    s3_region: str = Field(
+        "us-west-1",
+        description="AWS region for the S3 bucket.",
+        env="PORTAL_S3_REGION",
+    )
+
+    aws_access_key_id: str = Field(
+        ...,
+        description="AWS access key ID; for getting metadata objects from S3.",
+        env="PORTAL_AWS_ACCESS_KEY_ID",
+    )
+
+    aws_access_key_secret: SecretStr = Field(
+        ...,
+        description=(
+            "AWS access key secret; for getting metadata objects from S3."
+        ),
+        env="PORTAL_AWS_ACCESS_KEY_SECRET",
+    )
+
 
 config = Config()
 """Configuration for the spherex-doc-portal."""
