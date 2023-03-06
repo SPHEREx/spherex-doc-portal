@@ -17,3 +17,5 @@ PyYAML
 Jinja2
 cachetools
 asyncache
+httpx
+aws-request-signer

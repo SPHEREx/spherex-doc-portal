@@ -15,6 +15,10 @@ asyncache==0.3.1 \
     --hash=sha256:9a1e60a75668e794657489bdea6540ee7e3259c483517b934670db7600bf5035 \
     --hash=sha256:ef20a1024d265090dd1e0785c961cf98b9c32cc7d9478973dcf25ac1b80011f5
     # via -r requirements/main.in
+aws-request-signer==1.2.0 \
+    --hash=sha256:0d5a2b0ced30cfde0585db9ac7b56c419e41e529c17ec1d0a0ba16e26e827be5 \
+    --hash=sha256:eb5bca05d5055a608078be5f47bb6a333f1e5c383ed7603a75289e04203a10a6
+    # via -r requirements/main.in
 cachetools==5.3.0 \
     --hash=sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14 \
     --hash=sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4
@@ -93,7 +97,9 @@ httptools==0.5.0 \
 httpx==0.23.3 \
     --hash=sha256:9818458eb565bb54898ccb9b8b251a28785dd4a55afbc23d0eb410754fe7d0f9 \
     --hash=sha256:a211fcce9b1254ea24f0cd6af9869b3d29aba40154e947d2a07bb499b3e310d6
-    # via safir
+    # via
+    #   -r requirements/main.in
+    #   safir
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
