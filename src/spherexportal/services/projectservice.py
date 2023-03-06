@@ -8,7 +8,7 @@ from ..domain import GitHubIssueCount, SpherexMsDocument
 from ..repositories.ltdapi import LtdApi, LtdOrganizationModel, LtdProjectModel
 from ..repositories.mockdata import MockDataRepository
 from ..repositories.projects import ProjectRepository
-from ..repositories.s3metadata import Bucket
+from ..repositories.s3metadata import Bucket, MetadataError
 
 
 class ProjectService:
@@ -42,10 +42,16 @@ class ProjectService:
 
         projects = await ltd_client.get_projects()
         for project in projects:
-            if project.slug.startswith("ssdc-ms"):
-                await self._ingest_ssdc_ms(
-                    bucket=bucket, project=project, org=org
+            try:
+                if project.slug.startswith("ssdc-ms"):
+                    await self._ingest_ssdc_ms(
+                        bucket=bucket, project=project, org=org
+                    )
+            except MetadataError as e:
+                self._logger.warning(
+                    f"Could ingest metadata for {project.slug}", details=str(e)
                 )
+                continue
 
     async def _ingest_ssdc_ms(
         self,
@@ -85,6 +91,4 @@ class ProjectService:
             pipeline_level=lander_metadata.pipeline_level,
             difficulty=str(lander_metadata.difficulty),
         )
-        # FIXME create an "upsert" method on the repository to avoid
-        # potential for duplications when re-running an ingest.
-        self._repo.ssdc_ms.projects.append(domain_model)
+        self._repo.ssdc_ms.upsert(domain_model)
