@@ -7,7 +7,17 @@ published by site generators like Lander.
 from __future__ import annotations
 
 import httpx
+import pydantic
 from aws_request_signer import AwsRequestSigner
+from spherexlander.parsers.pipelinemodule import SpherexPipelineModuleMetadata
+
+
+class MetadataError(Exception):
+    def __init__(self, reason: str, handle: str, exc: Exception):
+        super().__init__(f"Metadata error in {handle}: {reason}\n{str(exc)}")
+        self.reason = reason
+        self.handle = handle
+        self.exc = exc
 
 
 class Bucket:
@@ -54,3 +64,26 @@ class Bucket:
         headers = self.signer.sign_with_headers("GET", url)
         request = self.http_client.build_request("GET", url, headers=headers)
         return await self.http_client.send(request)
+
+    async def _get_lander_metadata(self, handle: str) -> httpx.Response:
+        key = f"{handle.lower()}/v/__main/metadata.json"
+        try:
+            response = await self.get_object(key)
+            response.raise_for_status()
+        except httpx.HTTPError as e:
+            raise MetadataError(
+                "Could not get metadata object", handle=handle, exc=e
+            )
+        return response
+
+    async def get_ssdc_ms_metadata(
+        self, handle: str
+    ) -> SpherexPipelineModuleMetadata:
+        response = await self._get_lander_metadata(handle)
+        try:
+            metadata = SpherexPipelineModuleMetadata.parse_obj(response.json())
+        except pydantic.ValidationError as e:
+            raise MetadataError(
+                "Could not parse metadata object", handle=handle, exc=e
+            )
+        return metadata
