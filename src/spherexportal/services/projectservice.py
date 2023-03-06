@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import Optional
+
 import httpx
+from spherexlander.parsers.spherexdata import ApprovalInfo
 from structlog.stdlib import BoundLogger
 
 from ..config import config
@@ -53,6 +56,17 @@ class ProjectService:
                 )
                 continue
 
+    def _format_lander_approval_str(
+        self, approval: Optional[ApprovalInfo]
+    ) -> Optional[str]:
+        """Convert a ApprovalInfo from the SPHEREx Lander metadata model into
+        a string with the approval date and name for display.
+        """
+        if approval is None:
+            return None
+
+        return f"{approval.date}, {approval.name}"
+
     async def _ingest_ssdc_ms(
         self,
         *,
@@ -89,6 +103,9 @@ class ProjectService:
             ),
             diagram_index=lander_metadata.diagram_index,
             pipeline_level=lander_metadata.pipeline_level,
+            approval_str=self._format_lander_approval_str(
+                lander_metadata.approval
+            ),
             difficulty=str(lander_metadata.difficulty),
         )
         self._repo.ssdc_ms.upsert(domain_model)
