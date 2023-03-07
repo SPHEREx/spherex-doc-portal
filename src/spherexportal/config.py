@@ -72,18 +72,27 @@ class Config(BaseSettings):
         env="PORTAL_S3_REGION",
     )
 
-    aws_access_key_id: str = Field(
-        ...,
+    aws_access_key_id: Optional[str] = Field(
+        None,
         description="AWS access key ID; for getting metadata objects from S3.",
         env="PORTAL_AWS_ACCESS_KEY_ID",
     )
 
-    aws_access_key_secret: SecretStr = Field(
-        ...,
+    aws_access_key_secret: Optional[SecretStr] = Field(
+        None,
         description=(
             "AWS access key secret; for getting metadata objects from S3."
         ),
         env="PORTAL_AWS_ACCESS_KEY_SECRET",
+    )
+
+    use_mock_data: bool = Field(
+        True,
+        description=(
+            "Use the YAML dataset rather than obtaining metadata from live "
+            "sources like LTD and S3"
+        ),
+        env="PORTAL_USE_MOCK_DATA",
     )
 
 

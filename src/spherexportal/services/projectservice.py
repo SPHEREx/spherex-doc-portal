@@ -68,6 +68,14 @@ class ProjectService:
         """Bootstrap the project repository using data from the LTD API."""
         ltd_client = LtdApi(self._http_client)
         org = await ltd_client.get_organization()
+        if (
+            config.aws_access_key_id is None
+            or config.aws_access_key_secret is None
+        ):
+            raise RuntimeError(
+                "PORTAL_AWS_ACCESS_KEY_ID and PORTAL_AWS_ACCESS_KEY_SECRET "
+                "are needed to bootstrap metadata"
+            )
         bucket = Bucket(
             bucket=org.s3_bucket or "spherex-docs",  # default for sPHEREx
             region=config.s3_region,
