@@ -6,10 +6,12 @@ published by site generators like Lander.
 
 from __future__ import annotations
 
+from typing import Type, TypeVar
+
 import httpx
 import pydantic
 from aws_request_signer import AwsRequestSigner
-from spherexlander.parsers.pipelinemodule import SpherexPipelineModuleMetadata
+from spherexlander.parsers.spherexdata import SpherexMetadata
 
 
 class MetadataError(Exception):
@@ -18,6 +20,9 @@ class MetadataError(Exception):
         self.reason = reason
         self.handle = handle
         self.exc = exc
+
+
+LanderType = TypeVar("LanderType", bound=SpherexMetadata)
 
 
 class Bucket:
@@ -65,7 +70,9 @@ class Bucket:
         request = self.http_client.build_request("GET", url, headers=headers)
         return await self.http_client.send(request)
 
-    async def _get_lander_metadata(self, handle: str) -> httpx.Response:
+    async def get_lander_metadata(
+        self, handle: str, model: Type[LanderType]
+    ) -> LanderType:
         key = f"{handle.lower()}/v/__main/metadata.json"
         try:
             response = await self.get_object(key)
@@ -74,14 +81,9 @@ class Bucket:
             raise MetadataError(
                 "Could not get metadata object", handle=handle, exc=e
             )
-        return response
 
-    async def get_ssdc_ms_metadata(
-        self, handle: str
-    ) -> SpherexPipelineModuleMetadata:
-        response = await self._get_lander_metadata(handle)
         try:
-            metadata = SpherexPipelineModuleMetadata.parse_obj(response.json())
+            metadata = model.parse_obj(response.json())
         except pydantic.ValidationError as e:
             raise MetadataError(
                 "Could not parse metadata object", handle=handle, exc=e
