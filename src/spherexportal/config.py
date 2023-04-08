@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
 
-from pydantic import BaseSettings, Field, FilePath, HttpUrl, SecretStr
+from pydantic import (
+    BaseSettings,
+    Field,
+    FilePath,
+    HttpUrl,
+    RedisDsn,
+    SecretStr,
+)
 
 __all__ = ["Config", "Profile", "LogLevel"]
 
@@ -40,7 +46,7 @@ class Config(BaseSettings):
     dataset_path: FilePath = Field(..., env="PORTAL_DATASET_PATH")
 
     ltd_api_url: HttpUrl = Field(
-        "https://docs-api.ipac.caltech.edu",
+        HttpUrl("https://docs-api.ipac.caltech.edu/", scheme="https"),
         description="Root URL of the LTD API server.",
         env="PORTAL_LTD_API_URL",
     )
@@ -57,7 +63,7 @@ class Config(BaseSettings):
         env="PORTAL_LTD_API_USERNAME",
     )
 
-    ltd_api_password: Optional[SecretStr] = Field(
+    ltd_api_password: SecretStr | None = Field(
         None,
         description="Password corresponding to ltd_api_username",
         env="PORTAL_LTD_API_PASSWORD",
@@ -72,13 +78,13 @@ class Config(BaseSettings):
         env="PORTAL_S3_REGION",
     )
 
-    aws_access_key_id: Optional[str] = Field(
+    aws_access_key_id: str | None = Field(
         None,
         description="AWS access key ID; for getting metadata objects from S3.",
         env="PORTAL_AWS_ACCESS_KEY_ID",
     )
 
-    aws_access_key_secret: Optional[SecretStr] = Field(
+    aws_access_key_secret: SecretStr | None = Field(
         None,
         description=(
             "AWS access key secret; for getting metadata objects from S3."
@@ -93,6 +99,12 @@ class Config(BaseSettings):
             "sources like LTD and S3"
         ),
         env="PORTAL_USE_MOCK_DATA",
+    )
+
+    redis_url: RedisDsn = Field(
+        RedisDsn("redis://localhost:6379/0", scheme="redis"),
+        env="PORTAL_REDIS_URL",
+        description="Redis database URL for caching project metadata.",
     )
 
 
