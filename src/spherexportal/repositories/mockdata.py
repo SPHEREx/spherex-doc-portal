@@ -13,7 +13,6 @@ from pydantic import AnyHttpUrl, BaseModel, Field
 from ..domain import (
     GitHubIssueCount,
     GitHubRelease,
-    SpherexCategory,
     SpherexDpDocument,
     SpherexIfDocument,
     SpherexMsDocument,
@@ -279,48 +278,6 @@ class MockDataModel(BaseModel):
         data = yaml.safe_load(path.read_text())
         return cls.parse_obj(data)
 
-    @property
-    def ssdc_ms_projects(self) -> SpherexCategory[SpherexMsDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_ms]
-        )
-
-    @property
-    def ssdc_pm_projects(self) -> SpherexCategory[SpherexPmDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_pm]
-        )
-
-    @property
-    def ssdc_if_projects(self) -> SpherexCategory[SpherexIfDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_if]
-        )
-
-    @property
-    def ssdc_dp_projects(self) -> SpherexCategory[SpherexDpDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_dp]
-        )
-
-    @property
-    def ssdc_tr_projects(self) -> SpherexCategory[SpherexTrDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_tr]
-        )
-
-    @property
-    def ssdc_tn_projects(self) -> SpherexCategory[SpherexTnDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_tn]
-        )
-
-    @property
-    def ssdc_op_projects(self) -> SpherexCategory[SpherexOpDocument]:
-        return SpherexCategory(
-            projects=[doc.domain_model for doc in self.ssdc_op]
-        )
-
 
 class MockDataRepository:
     """A repository that loads mock project data from a YAML file for testing.
@@ -342,12 +299,27 @@ class MockDataRepository:
         data = MockDataModel.from_yaml(path)
         return cls(data)
 
-    def bootstrap_project_repository(self, repo: ProjectRepository) -> None:
+    async def bootstrap_project_repository(
+        self, repo: ProjectRepository
+    ) -> None:
         """Add mock data to the `ProjectRepository`."""
-        repo.ssdc_ms = self._data.ssdc_ms_projects
-        repo.ssdc_pm = self._data.ssdc_pm_projects
-        repo.ssdc_if = self._data.ssdc_if_projects
-        repo.ssdc_dp = self._data.ssdc_dp_projects
-        repo.ssdc_tr = self._data.ssdc_tr_projects
-        repo.ssdc_tn = self._data.ssdc_tn_projects
-        repo.ssdc_op = self._data.ssdc_op_projects
+        for ms_doc in self._data.ssdc_ms:
+            await repo.ssdc_ms.upsert(ms_doc.domain_model)
+
+        for pm_doc in self._data.ssdc_pm:
+            await repo.ssdc_pm.upsert(pm_doc.domain_model)
+
+        for if_doc in self._data.ssdc_if:
+            await repo.ssdc_if.upsert(if_doc.domain_model)
+
+        for dp_doc in self._data.ssdc_dp:
+            await repo.ssdc_dp.upsert(dp_doc.domain_model)
+
+        for tr_doc in self._data.ssdc_tr:
+            await repo.ssdc_tr.upsert(tr_doc.domain_model)
+
+        for tn_doc in self._data.ssdc_tn:
+            await repo.ssdc_tn.upsert(tn_doc.domain_model)
+
+        for op_doc in self._data.ssdc_op:
+            await repo.ssdc_op.upsert(op_doc.domain_model)

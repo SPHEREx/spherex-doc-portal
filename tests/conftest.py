@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest_asyncio
+import redis.asyncio as redis
 from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 
@@ -14,6 +15,18 @@ if TYPE_CHECKING:
     from typing import AsyncIterator
 
     from fastapi import FastAPI
+
+
+@pytest_asyncio.fixture
+async def redis_client() -> AsyncIterator[redis.Redis]:
+    """A Redis client for testing.
+
+    This fixture connects to the Redis server that runs via tox-docker.
+    """
+    client: redis.Redis = redis.Redis(host="localhost", port=6379, db=0)
+    yield client
+
+    await client.close()
 
 
 @pytest_asyncio.fixture
