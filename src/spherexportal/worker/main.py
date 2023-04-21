@@ -5,9 +5,11 @@ from typing import Any
 
 import httpx
 import structlog
+from arq import cron
 from safir.logging import configure_logging
 
 from spherexportal.config import config
+from spherexportal.dependencies.projects import projects_dependency
 from spherexportal.dependencies.redis import redis_dependency
 
 from .functions import refresh_projects
@@ -36,6 +38,8 @@ async def startup(ctx: dict[Any, Any]) -> None:
     # Set up FastAPI dependencies; we can use them "manually" with
     # arq to provide resources similarly to FastAPI endpoints
     await redis_dependency.initialize(config.redis_url)
+    redis = await redis_dependency()
+    await projects_dependency.initialize(redis)
 
 
 async def shutdown(ctx: dict[Any, Any]) -> None:
@@ -56,13 +60,21 @@ async def shutdown(ctx: dict[Any, Any]) -> None:
     logger.info("Worker shutdown complete.")
 
 
+# For info on ignoring the type checking here, see
+# https://github.com/samuelcolvin/arq/issues/249
+cron_jobs: list[cron] = []  # type: ignore
+cron_jobs.append(
+    cron(refresh_projects, minute={0, 15, 30, 45})  # type: ignore
+)
+
+
 class WorkerSettings:
     """Configuration for a Times Square arq worker.
 
     See `arq.worker.Worker` for details on these attributes.
     """
 
-    functions = [refresh_projects]
+    cron_jobs = cron_jobs
 
     redis_settings = config.arq_redis_settings
 
