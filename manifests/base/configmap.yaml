@@ -12,3 +12,4 @@ data:
   SAFIR_LOGGER: "spherexportal"
   SAFIR_LOG_LEVEL: "INFO"
   PORTAL_DATASET_PATH: "/opt/spherex-doc-portal/dataset/dataset.yaml"
+  PORTAL_REDIS_URL: "redis://redis:6379/0"
