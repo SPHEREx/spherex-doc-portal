@@ -15,3 +15,8 @@ safir
 pydantic
 PyYAML
 Jinja2
+cachetools
+asyncache
+httpx
+aws-request-signer
+git+https://github.com/SPHEREx/spherex-lander-plugin.git@main#egg=spherex-lander-plugin

@@ -177,3 +177,20 @@ class SpherexCategory(Generic[T]):
     """A collection of SpherexProject items for a specific category."""
 
     projects: List[T] = field(default_factory=list)
+
+    def upsert(self, project: T) -> None:
+        """Append a new project or replace an existing project with the new
+        data.
+
+        Projects are assessed to be matching based on a``project_id`` and
+        ``organization_id``.
+        """
+        for i, existing_project in enumerate(self.projects):
+            if (existing_project.project_id == project.project_id) and (
+                existing_project.organization_id == project.organization_id
+            ):
+                self.projects[i] = project
+                return
+
+        # Only if there isn't a match
+        self.projects.append(project)

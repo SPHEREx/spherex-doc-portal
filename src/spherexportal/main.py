@@ -41,20 +41,24 @@ app.include_router(router)
 static_path = Path(__file__).parent.joinpath("static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
+app.add_middleware(XForwardedMiddleware)
+
 
 @app.on_event("startup")
 async def startup_event() -> None:
     logger = get_logger(__name__)
     logger.bind(app_event="startup")
 
-    app.add_middleware(XForwardedMiddleware)
-
     projects_repo = await projects_dependency()
 
-    project_service = ProjectService(repo=projects_repo, logger=logger)
-    # FIXME Default to loading mock data right now; swap this out with a
-    # system for scraping the data from the LTD API and S3 bucket.
-    await project_service.bootstrap_mock_repo()
+    http_client = await http_client_dependency()
+    project_service = ProjectService(
+        repo=projects_repo, logger=logger, http_client=http_client
+    )
+    if config.use_mock_data:
+        await project_service.bootstrap_mock_repo()
+    else:
+        await project_service.bootstrap_from_api()
 
     logger.info("Finished startup")
 

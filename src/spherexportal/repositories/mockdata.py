@@ -44,7 +44,6 @@ class BaseProjectModel(BaseModel):
 
 
 class BaseGitHubProjectModel(BaseProjectModel):
-
     github_url: AnyHttpUrl
     issues: int
     prs: int
@@ -71,7 +70,6 @@ class BaseGitHubProjectModel(BaseProjectModel):
 
 
 class BaseSpherexDocumentModel(BaseGitHubProjectModel):
-
     handle: str
     commit_date: datetime
     ssdc_author: str
