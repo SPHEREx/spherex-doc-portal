@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "spherex-doc-portal-worker"
+  labels:
+    app.kubernetes.io/name: "spherex-doc-portal-worker"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "spherex-doc-portal-worker"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "spherex-doc-portal-worker"
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: app
+          imagePullPolicy: "IfNotPresent"
+          # Use images field in a Kustomization to set/update image tag
+          image: "ghcr.io/spherex/spherex-doc-portal"
+          envFrom:
+            - configMapRef:
+                name: "spherex-doc-portal"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - "all"
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: "dataset"
+              mountPath: "/opt/spherex-doc-portal/dataset/"
+              readOnly: true
+          command: ["arq"]
+          args: ["spherexportal.worker.main.WorkerSettings"]
+          livenessProbe:
+            exec:
+              command:
+                - "arq"
+                - "--check"
+                - "spherexportal.worker.main.WorkerSettings"
+            initialDelaySeconds: 360
+            periodSeconds: 15
+      volumes:
+        - name: "dataset"
+          configMap:
+            name: "spherex-portal-dataset"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
