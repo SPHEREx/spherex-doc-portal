@@ -118,6 +118,21 @@ class Config(BaseSettings):
 
     arq_mode: ArqMode = Field(ArqMode.production, env="PORTAL_ARQ_MODE")
 
+    github_app_id: str = Field(
+        env="PORTAL_GITHUB_APP_ID",
+        description="GitHub App ID for the SPHEREx Doc Portal",
+    )
+
+    github_webhook_secret: SecretStr = Field(
+        env="PORTAL_GITHUB_WEBHOOK_SECRET",
+        description="GitHub webhook secret for the SPHEREx Doc Portal",
+    )
+
+    github_app_private_key: SecretStr = Field(
+        env="GITHUB_APP_PRIVATE_KEY",
+        description="GitHub App private key for the SPHEREx Doc Portal",
+    )
+
     @property
     def arq_redis_settings(self) -> RedisSettings:
         """Create a Redis settings instance for arq."""
