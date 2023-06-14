@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, Field
 
 approval_field = Field(
     None, description="Approval information for the document."
 )
+
+PROJECT_TIMEZONE = ZoneInfo("America/Los_Angeles")
+"""Timezone to use for project times when displaying in the UI."""
 
 
 class SpherexProject(BaseModel):
@@ -56,6 +60,13 @@ class GitHubRelease(BaseModel):
         ..., description="Times (UTC) when the release was created."
     )
 
+    @property
+    def formatted_date(self) -> str:
+        """The formatted date of the release."""
+        return self.date_created.astimezone(tz=PROJECT_TIMEZONE).strftime(
+            "%Y-%m-%d"
+        )
+
 
 class SpherexGitHubProject(SpherexProject):
     """A GitHub-based SPHEREx documentation project."""
@@ -82,6 +93,16 @@ class SpherexGitHubProject(SpherexProject):
             "isn't available."
         ),
     )
+
+    @property
+    def formatted_latest_commit_date(self) -> str:
+        """The formatted date of the latest commit."""
+        if self.github_release is not None:
+            if self.latest_commit_datetime < self.github_release.date_created:
+                return ""
+        return self.latest_commit_datetime.astimezone(
+            tz=PROJECT_TIMEZONE
+        ).strftime("%Y-%m-%d")
 
 
 class SpherexDocument(SpherexGitHubProject):
