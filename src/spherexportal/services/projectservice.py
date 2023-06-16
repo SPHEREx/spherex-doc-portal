@@ -92,18 +92,11 @@ class ProjectService:
         if self._github_factory is not None:
             try:
                 app_client = self._github_factory.create_app_client()
-                installed_repos: list[str] = []
-                async for repo in app_client.getiter(
-                    "/installation/repositories", iterable_key="repositories"
-                ):
-                    installed_repos.append(repo["full_name"])
-                self._logger.info(
-                    "GitHub App is installed in repos", repos=installed_repos
-                )
+                jwt = self._github_factory.get_app_jwt()
+                app_info = await app_client.getitem("/app", jwt=jwt)
+                self._logger.info("GitHub App info", app_info=app_info)
             except Exception as exc:
-                self._logger.warning(
-                    "Failed to get installed repos", exc_info=exc
-                )
+                self._logger.warning("Failed to get app info", exc_info=exc)
         ltd_client = LtdApi(self._http_client)
         org = await ltd_client.get_organization()
         if (
@@ -161,6 +154,8 @@ class ProjectService:
                 "Failed to create GitHub client for repo",
                 repo_url=repo_url,
                 exc_info=exc,
+                owner=owner,
+                repo=repo,
             )
             return None
 
