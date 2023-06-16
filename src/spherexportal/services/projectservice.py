@@ -130,10 +130,20 @@ class ProjectService:
         if not repo_url.startswith("https://github.com/"):
             return None
         owner, repo = self._parse_github_repo_url(repo_url)
-        return await self._github_factory.create_installation_client_for_repo(
-            owner=owner,
-            repo=repo,
-        )
+        try:
+            return (
+                await self._github_factory.create_installation_client_for_repo(
+                    owner=owner,
+                    repo=repo,
+                )
+            )
+        except Exception as exc:
+            self._logger.warning(
+                "Failed to create GitHub client for repo",
+                repo_url=repo_url,
+                exc_info=exc,
+            )
+            return None
 
     async def _get_github_repository(
         self, repo_url: str, github_client: GitHubAPI
