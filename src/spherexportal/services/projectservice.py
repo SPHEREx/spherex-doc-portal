@@ -91,15 +91,20 @@ class ProjectService:
     async def bootstrap_from_api(self) -> None:
         """Bootstrap the project repository using data from the LTD API."""
         if self._github_factory is not None:
-            app_client = self._github_factory.create_app_client()
-            installed_repos: list[str] = []
-            async for repo in app_client.getiter(
-                "/installation/repositories", iterable_key="repositories"
-            ):
-                installed_repos.append(repo["full_name"])
-            self._logger.info(
-                "GitHub App is installed in repos", repos=installed_repos
-            )
+            try:
+                app_client = self._github_factory.create_app_client()
+                installed_repos: list[str] = []
+                async for repo in app_client.getiter(
+                    "/installation/repositories", iterable_key="repositories"
+                ):
+                    installed_repos.append(repo["full_name"])
+                self._logger.info(
+                    "GitHub App is installed in repos", repos=installed_repos
+                )
+            except Exception as exc:
+                self._logger.warning(
+                    "Failed to get installed repos", exc_info=exc
+                )
         ltd_client = LtdApi(self._http_client)
         org = await ltd_client.get_organization()
         if (
