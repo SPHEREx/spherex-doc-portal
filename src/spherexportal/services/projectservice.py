@@ -94,18 +94,18 @@ class ProjectService:
         if self._github_factory is not None:
             try:
                 app_client = self._github_factory.create_app_client()
-                installed_repos: list[str] = []
-                async for repo in app_client.getiter(
-                    "/installation/repositories", iterable_key="repositories"
-                ):
-                    installed_repos.append(repo["full_name"])
-                self._logger.info(
-                    "GitHub App is installed in repos", repos=installed_repos
-                )
+                # installed_repos: list[str] = []
+                # async for repo in app_client.getiter(
+                #     "/installation/repositories", iterable_key="repositories"
+                # ):
+                #     installed_repos.append(repo["full_name"])
+                # self._logger.info(
+                #     "GitHub App is installed in repos", repos=installed_repos
+                # )
+                app_info = await app_client.get("/app")
+                self._logger.info("GitHub App info", app_info=app_info)
             except Exception as exc:
-                self._logger.warning(
-                    "Failed to get installed repos", exc_info=exc
-                )
+                self._logger.warning("Failed to get app info", exc_info=exc)
         ltd_client = LtdApi(self._http_client)
         org = await ltd_client.get_organization()
         if (
