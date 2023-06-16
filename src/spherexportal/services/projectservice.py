@@ -127,6 +127,7 @@ class ProjectService:
         self, repo_url: Optional[str] = None
     ) -> GitHubAPI | None:
         if repo_url is None:
+            self._logger.debug("No repo URL provided")
             return None
         if self._github_factory is None:
             return None
