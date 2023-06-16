@@ -79,15 +79,9 @@ class ProjectService:
                 name="SPHEREx/spherex-doc-portal",
                 http_client=http_client,
             )
-            app_client = self._github_factory.create_app_client()
-            repos = app_client.getiter("/installation/repositories")
-            repo_names = [repo["full_name"] for repo in repos]
-            self._logger.info(
-                "GitHub App client factory initialized",
-                installed_repos=repo_names,
-            )
         else:
             self._logger.info("GitHub App client factory not configured")
+        self._installed_repos: list[str] = []
 
     async def bootstrap_mock_repo(self) -> None:
         mockdata_repo = MockDataRepository.load_builtin_data()
@@ -95,6 +89,16 @@ class ProjectService:
 
     async def bootstrap_from_api(self) -> None:
         """Bootstrap the project repository using data from the LTD API."""
+        if self._github_factory is not None:
+            app_client = self._github_factory.create_app_client()
+            installed_repos: list[str] = []
+            async for repo in app_client.getiter(
+                "/installation/repositories", iterable_key="repositories"
+            ):
+                installed_repos.append(repo["full_name"])
+            self._logger.info(
+                "GitHub App is installed in repos", repos=installed_repos
+            )
         ltd_client = LtdApi(self._http_client)
         org = await ltd_client.get_organization()
         if (
