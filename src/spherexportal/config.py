@@ -132,7 +132,7 @@ class Config(BaseSettings):
 
     github_app_private_key: SecretStr | None = Field(
         None,
-        env="GITHUB_APP_PRIVATE_KEY",
+        env="PORTAL_GITHUB_APP_PRIVATE_KEY",
         description="GitHub App private key for the SPHEREx Doc Portal",
     )
 
