@@ -73,6 +73,7 @@ class ProjectService:
             config.github_app_id is not None
             and config.github_app_private_key is not None
         ):
+            print(config.github_app_id)
             print(config.github_app_private_key.get_secret_value())
             self._github_factory = GitHubAppClientFactory(
                 id=config.github_app_id,
