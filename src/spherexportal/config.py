@@ -147,6 +147,17 @@ class Config(BaseSettings):
         )
         return redis_settings
 
+    @property
+    def is_github_app_enabled(self) -> bool:
+        """Return whether GitHub App integration is enabled."""
+        return all(
+            [
+                self.github_app_id,
+                self.github_webhook_secret,
+                self.github_app_private_key,
+            ]
+        )
+
 
 config = Config()
 """Configuration for the spherex-doc-portal."""
