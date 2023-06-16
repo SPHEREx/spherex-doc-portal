@@ -1,14 +1,16 @@
 """Handlers for the portal's webpages."""
 
+import asyncio
 from pathlib import Path
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, Response, status
 from fastapi.responses import PlainTextResponse
+from gidgethub.sansio import Event
 from safir.dependencies.logger import logger_dependency
-from starlette.requests import Request
 from starlette.templating import Jinja2Templates, _TemplateResponse
 from structlog.stdlib import BoundLogger
 
+from spherexportal.config import config
 from spherexportal.dependencies.projects import projects_dependency
 from spherexportal.repositories.projects import ProjectRepository
 
@@ -119,6 +121,45 @@ async def get_ssdc_op(
         "request": request,
     }
     return templates.TemplateResponse("ssdc-op.html.jinja", context)
+
+
+@router.post(
+    "/api/github/webhook",
+    summary="GitHub App webhook",
+    description="This endpoint receives webhook events from GitHub",
+    status_code=status.HTTP_200_OK,
+)
+async def post_github_webhook(
+    request: Request,
+    logger: BoundLogger = Depends(logger_dependency),
+) -> Response:
+    """Process GitHub webhook events."""
+    if not config.is_github_app_enabled:
+        return Response(
+            "GitHub App is not enabled",
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
+
+    if config.github_webhook_secret is None:
+        # type assertion
+        raise RuntimeError("GitHub webhook secret is not configured")
+
+    webhook_secret = config.github_webhook_secret.get_secret_value()
+    body = await request.body()
+    event = Event.from_http(request.headers, body, secret=webhook_secret)
+
+    # Bind the X-GitHub-Delivery header to the logger context; this identifies
+    # the webhook request in GitHub's API and UI for diagnostics
+    logger = logger.bind(github_delivery=event.delivery_id)
+
+    logger.debug("Received GitHub webhook", payload=event.data)
+    # Give GitHub some time to reach internal consistency.
+    await asyncio.sleep(1)
+
+    # TODO: Implement webhook router
+    # await webhook_router.dispatch(event, logger)
+
+    return Response(status_code=status.HTTP_202_ACCEPTED)
 
 
 @router.get("/__healthz")
