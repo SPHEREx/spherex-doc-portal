@@ -79,6 +79,9 @@ class ProjectService:
                 name="SPHEREx/spherex-doc-portal",
                 http_client=http_client,
             )
+            self._logger.info("GitHub App client factory initialized")
+        else:
+            self._logger.info("GitHub App client factory not configured")
 
     async def bootstrap_mock_repo(self) -> None:
         mockdata_repo = MockDataRepository.load_builtin_data()
@@ -124,6 +127,7 @@ class ProjectService:
         self, repo_url: Optional[str] = None
     ) -> GitHubAPI | None:
         if repo_url is None:
+            self._logger.debug("No repo URL provided")
             return None
         if self._github_factory is None:
             return None
@@ -195,9 +199,15 @@ class ProjectService:
     async def _get_common_github_metadata(
         self, repository_url: str, default_updated_datetime: datetime
     ) -> tuple[GitHubIssueCount, GitHubRelease | None, datetime]:
+        self._logger.debug("Getting GitHub metadata", repo_url=repository_url)
         github_installation_client = await self._create_github_repo_client(
             repo_url=repository_url
         )
+        if github_installation_client is None:
+            self._logger.debug(
+                "No GitHub client available for repository",
+                repo_url=repository_url,
+            )
 
         # Defaults for GitHub-based metadata
         github_issues: GitHubIssueCount = GitHubIssueCount(
@@ -222,6 +232,13 @@ class ProjectService:
                 repo=repo_data,
             )
             commit_date = repo_data.pushed_at
+            self._logger.debug(
+                "Got GitHub metadata",
+                repo_url=repository_url,
+                github_issues=github_issues,
+                github_release=github_release,
+                commit_date=commit_date,
+            )
 
         return github_issues, github_release, commit_date
 
