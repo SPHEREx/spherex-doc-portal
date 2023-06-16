@@ -79,7 +79,13 @@ class ProjectService:
                 name="SPHEREx/spherex-doc-portal",
                 http_client=http_client,
             )
-            self._logger.info("GitHub App client factory initialized")
+            app_client = self._github_factory.create_app_client()
+            repos = app_client.getiter("/installation/repositories")
+            repo_names = [repo["full_name"] for repo in repos]
+            self._logger.info(
+                "GitHub App client factory initialized",
+                installed_repos=repo_names,
+            )
         else:
             self._logger.info("GitHub App client factory not configured")
 
