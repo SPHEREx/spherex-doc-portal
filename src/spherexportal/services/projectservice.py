@@ -187,8 +187,8 @@ class ProjectService:
                 issue_count += 1
 
         return GitHubIssueCount(
-            open_issue_count=0,
-            open_pr_count=0,
+            open_issue_count=issue_count,
+            open_pr_count=pr_count,
             issue_url=(
                 f"https://github.com/{repo.owner.login}/{repo.name}/issues"
             ),
