@@ -80,7 +80,7 @@ class GitHubReleaseModel(BaseModel):
     )
 
     @validator("created_at", "published_at", pre=True, allow_reuse=True)
-    def normalize_datetime(cls, value: datetime) -> datetime:
+    def normalize_datetime(cls, value: str) -> datetime:
         """Normalize datetime values."""
         d = normalize_isodatetime(value)
         if d is None:
@@ -99,7 +99,7 @@ class GitHubRepositoryModel(GitHubRepositoryModelBase):
     )
 
     @validator("pushed_at", pre=True, allow_reuse=True)
-    def normalize_pushed_at(cls, value: datetime) -> datetime:
+    def normalize_pushed_at(cls, value: str) -> datetime:
         """Normalize datetime values."""
         d = normalize_isodatetime(value)
         if d is None:
