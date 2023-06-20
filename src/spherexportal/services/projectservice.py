@@ -73,8 +73,6 @@ class ProjectService:
             config.github_app_id is not None
             and config.github_app_private_key is not None
         ):
-            print(config.github_app_id)
-            print(config.github_app_private_key.get_secret_value())
             self._github_factory = GitHubAppClientFactory(
                 id=config.github_app_id,
                 key=config.github_app_private_key.get_secret_value(),
@@ -94,15 +92,8 @@ class ProjectService:
         if self._github_factory is not None:
             try:
                 app_client = self._github_factory.create_app_client()
-                # installed_repos: list[str] = []
-                # async for repo in app_client.getiter(
-                #     "/installation/repositories", iterable_key="repositories"
-                # ):
-                #     installed_repos.append(repo["full_name"])
-                # self._logger.info(
-                #     "GitHub App is installed in repos", repos=installed_repos
-                # )
-                app_info = await app_client.get("/app")
+                jwt = await self._github_factory.get_app_jwt()
+                app_info = await app_client.getitem("/app", jwt=jwt)
                 self._logger.info("GitHub App info", app_info=app_info)
             except Exception as exc:
                 self._logger.warning("Failed to get app info", exc_info=exc)
