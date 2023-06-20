@@ -154,6 +154,8 @@ class ProjectService:
                 "Failed to create GitHub client for repo",
                 repo_url=repo_url,
                 exc_info=exc,
+                owner=owner,
+                repo=repo,
             )
             return None
 
