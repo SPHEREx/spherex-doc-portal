@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional
+from urllib.parse import urlparse
 
 import httpx
 from gidgethub.httpx import GitHubAPI
@@ -124,7 +125,9 @@ class ProjectService:
             )
 
     def _parse_github_repo_url(self, repo_url: str) -> tuple[str, str]:
-        owner, repo = repo_url[:19].split("/")[:2]
+        parts = urlparse(repo_url)
+        path = parts.path
+        owner, repo = path.split("/")[:2]
         if repo.endswith(".git"):
             repo = repo[:-4]
         elif repo.endswith(".git/"):
