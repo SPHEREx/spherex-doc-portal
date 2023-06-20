@@ -127,7 +127,7 @@ class ProjectService:
     def _parse_github_repo_url(self, repo_url: str) -> tuple[str, str]:
         parts = urlparse(repo_url)
         path = parts.path
-        owner, repo = path.split("/")[:2]
+        owner, repo = path.split("/")[1:3]  # leave out leading "/"
         if repo.endswith(".git"):
             repo = repo[:-4]
         elif repo.endswith(".git/"):
