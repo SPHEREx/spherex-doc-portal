@@ -101,6 +101,7 @@ class GitHubRepositoryModel(GitHubRepositoryModelBase):
     @validator("pushed_at", pre=True, allow_reuse=True)
     def normalize_pushed_at(cls, value: datetime) -> datetime:
         """Normalize datetime values."""
+        print("pushed_at", value, type(value))
         d = normalize_datetime(value)
         if d is None:
             raise ValueError("Invalid datetime")
