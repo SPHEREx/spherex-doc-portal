@@ -33,10 +33,10 @@
       <td>{% if doc.github_release %}{{doc.github_release.tag}} {{doc.github_release.formatted_date}}{% else %}&mdash;{%endif%}</td>
       <td>{{ doc.formatted_latest_commit_date }}</td>
       <td style="min-width: 3em;">{% if doc.github_issues.open_issue_count > 0 %}<div class="icon-row"><a href="{{doc.github_issues.issue_url}}"><svg class="icon octicon-git-pull-request-16">
-              <use xlink:href="#octicon-git-pull-request-16"></use>
+              <use xlink:href="#octicon-issue-opened-16"></use>
             </svg>&nbsp;{{ doc.github_issues.open_issue_count }}</a>{% endif %}</td>
       <td style="min-width: 3em;">{% if doc.github_issues.open_pr_count > 0 %}<a href="{{doc.github_issues.pr_url}}"><svg class="icon octicon-issue-opened-16">
-            <use xlink:href="#octicon-issue-opened-16"></use>
+            <use xlink:href="#octicon-git-pull-request-16"></use>
           </svg>&nbsp;{{ doc.github_issues.open_pr_count }}</a></div>{% endif %} </td>
       <td>{{ doc.ssdc_author_name }}</td>
       <td>{{ doc.project_contact_name }}</td>
