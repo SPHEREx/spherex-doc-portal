@@ -61,8 +61,6 @@ async def startup_event() -> None:
     )
     if config.use_mock_data:
         await project_service.bootstrap_mock_repo()
-    else:
-        await project_service.bootstrap_from_api()
 
     logger.info("Finished startup")
 
