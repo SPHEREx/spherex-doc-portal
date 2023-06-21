@@ -197,17 +197,26 @@ class ProjectService:
 
     async def _get_github_release(
         self, *, client: GitHubAPI, repo: GitHubRepositoryModel
-    ) -> GitHubRelease:
+    ) -> GitHubRelease | None:
         api_url = "/repos/{owner}/{repo}/releases/latest"
-        data = await client.getitem(
-            api_url, url_vars={"owner": repo.owner.login, "repo": repo.name}
-        )
-        release_model = GitHubReleaseModel.parse_obj(data)
+        try:
+            data = await client.getitem(
+                api_url,
+                url_vars={"owner": repo.owner.login, "repo": repo.name},
+            )
+            release_model = GitHubReleaseModel.parse_obj(data)
 
-        return GitHubRelease(
-            tag=release_model.tag_name,
-            date_created=release_model.published_at,
-        )
+            return GitHubRelease(
+                tag=release_model.tag_name,
+                date_created=release_model.published_at,
+            )
+        except Exception as exc:
+            self._logger.warning(
+                "Failed to get GitHub release",
+                exc_info=exc,
+                repo_url=repo.html_url,
+            )
+            return None
 
     async def _get_common_github_metadata(
         self, repository_url: str, default_updated_datetime: datetime
