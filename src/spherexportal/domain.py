@@ -104,6 +104,18 @@ class SpherexGitHubProject(SpherexProject):
             tz=PROJECT_TIMEZONE
         ).strftime("%Y-%m-%d")
 
+    @property
+    def sortable_latest_commit_date(self) -> str:
+        """The sortable date of the latest commit."""
+        return str(self.latest_commit_datetime.timestamp())
+
+    @property
+    def sortable_release_date(self) -> str:
+        """The sortable date of the latest release."""
+        if self.github_release is not None:
+            return str(self.github_release.date_created.timestamp())
+        return "0"
+
 
 class SpherexDocument(SpherexGitHubProject):
     """A general SPHEREx document."""
