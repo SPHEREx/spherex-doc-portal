@@ -35,14 +35,14 @@ spec:
               readOnly: true
           command: ["arq"]
           args: ["spherexportal.worker.main.WorkerSettings"]
-          livenessProbe:
-            exec:
-              command:
-                - "arq"
-                - "--check"
-                - "spherexportal.worker.main.WorkerSettings"
-            initialDelaySeconds: 360
-            periodSeconds: 15
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - "arq"
+          #       - "--check"
+          #       - "spherexportal.worker.main.WorkerSettings"
+          #   initialDelaySeconds: 360
+          #   periodSeconds: 15
       volumes:
         - name: "dataset"
           configMap:
