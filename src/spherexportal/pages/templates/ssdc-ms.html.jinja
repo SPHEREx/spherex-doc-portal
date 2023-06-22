@@ -16,7 +16,7 @@
       <th>ID</th>
       <th>Title</th>
       <th>Diagram</th>
-      <th>Release</th>
+      <th colspan="2">Release</th>
       <th colspan="3">GitHub Activity</th>
       <th>SSDC Lead</th>
       <th>Project POC</th>
@@ -30,7 +30,8 @@
       <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
       <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>
       <td data-sort="{{doc.sortable_diagram_ref}}">{{ doc.diagram_ref }}</td>
-      <td data-sort="{{doc.sortable_release_date}}">{% if doc.github_release %}{{doc.github_release.tag}} {{doc.github_release.formatted_date}}{% else %}&mdash;{%endif%}</td>
+      <td data-sort="{{doc.sortable_release_date}}">{% if doc.github_release %}{{doc.github_release.tag}}{% else %}&mdash;{%endif%}</td>
+      <td>{% if doc.github_release %}{{doc.github_release.formatted_date}}{% else %}&mdash;{%endif%}</td>
       <td data-sort="{{doc.sortable_latest_commit_date}}">{{ doc.formatted_latest_commit_date }}</td>
       <td style="min-width: 3em;">{% if doc.github_issues.open_issue_count > 0 %}<div class="icon-row"><a href="{{doc.github_issues.issue_url}}"><svg class="icon octicon-git-pull-request-16">
               <use xlink:href="#octicon-issue-opened-16"></use>
