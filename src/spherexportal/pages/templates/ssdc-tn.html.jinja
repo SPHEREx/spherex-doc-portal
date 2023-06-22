@@ -5,28 +5,6 @@
 {% block content %}
 <h1>SPHEREx Technical Notes (SSDC-TN)</h1>
 
-{% if category.projects %}
-<table class="sortable asc spherex-project-table">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Title</th>
-      <th>SSDC Lead</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for doc in category.projects|sort(attribute="handle") %}
-    <tr>
-      <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
-      <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>
-      <td>{{ doc.ssdc_author_name }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-{% else %}
-<p>No documents available.</p>
-{% endif %}
+{% include "components/projecttable.html.jinja" %}
 
 {% endblock %}

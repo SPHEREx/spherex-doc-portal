@@ -1,0 +1,13 @@
+/*
+ * SVG icon styling.
+ */
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  margin-bottom: -0.15em; /* Adjust vertical alignment */
+}

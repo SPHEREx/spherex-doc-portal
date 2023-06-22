@@ -40,6 +40,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           tox-envs: 'lint,typing,py,coverage-report'
+          tox-plugins: "tox-docker"
 
   build:
     runs-on: ubuntu-latest

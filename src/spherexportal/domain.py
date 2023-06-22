@@ -2,149 +2,199 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Generic, List, Optional, TypeVar
+from typing import Optional
+from zoneinfo import ZoneInfo
+
+from pydantic import BaseModel, Field
+
+approval_field = Field(
+    None, description="Approval information for the document."
+)
+
+PROJECT_TIMEZONE = ZoneInfo("America/Los_Angeles")
+"""Timezone to use for project times when displaying in the UI."""
 
 
-@dataclass(kw_only=True)
-class SpherexProject:
+class SpherexProject(BaseModel):
     """A generic SPHEREx documentation project hosted on
     spherex-docs.ipac.caltech.edu.
     """
 
-    url: str
-    """Root HTML URL."""
+    url: str = Field(..., description="Root HTML URL.")
 
-    title: str
-    """The title of the documentation project."""
+    title: str = Field(..., description="Title of the documentation project.")
 
-    project_id: str
-    """ID of the project in the LTD API."""
+    project_id: str = Field(
+        ..., description="ID of the project in the LTD API."
+    )
 
-    organization_id: str = "spherex"
-    """ID of the organization in the LTD API."""
+    organization_id: str = Field(
+        "spherex", description="ID of the organization in the LTD API."
+    )
 
 
-@dataclass(kw_only=True)
-class GitHubIssueCount:
+class GitHubIssueCount(BaseModel):
     """Summary info about GitHub issues."""
 
-    open_issue_count: int
+    open_issue_count: int = Field(
+        ..., description="Number of open GitHub issues."
+    )
 
-    open_pr_count: int
+    open_pr_count: int = Field(..., description="Number of open GitHub PRs.")
 
-    issue_url: str
+    issue_url: str = Field(
+        ..., description="Base URL of the GitHub issue tracker."
+    )
 
-    pr_url: str
+    pr_url: str = Field(..., description="Base URL of the GitHub PR tracker.")
 
 
-@dataclass(kw_only=True)
-class GitHubRelease:
+class GitHubRelease(BaseModel):
     """Summary of the latest GitHub release."""
 
-    tag: str
+    tag: str = Field(..., description="Git tag.")
     """Git tag."""
 
-    date_created: datetime
-    """Time (UTC) when the release was created."""
+    date_created: datetime = Field(
+        ..., description="Times (UTC) when the release was created."
+    )
+
+    @property
+    def formatted_date(self) -> str:
+        """The formatted date of the release."""
+        return self.date_created.astimezone(tz=PROJECT_TIMEZONE).strftime(
+            "%Y-%m-%d"
+        )
 
 
-@dataclass(kw_only=True)
 class SpherexGitHubProject(SpherexProject):
     """A GitHub-based SPHEREx documentation project."""
 
-    github_url: str
-    """URL of the project's GitHub repository."""
+    github_url: str = Field(
+        ..., description="URL of the project's GitHub repo."
+    )
 
-    github_issues: GitHubIssueCount
-    """Summary info about open GitHub issues and PRs."""
+    github_issues: GitHubIssueCount = Field(
+        ..., description="Summary info about open GitHub issues and PRs."
+    )
 
-    latest_commit_datetime: datetime
-    """The datetime (with a UTC timezone) of the latest commit to the default
-    branch on GitHub.
-    """
+    latest_commit_datetime: datetime = Field(
+        ...,
+        description=(
+            "Datetime of the latest commit to the default branch (UTC)."
+        ),
+    )
 
-    github_release: Optional[GitHubRelease]
-    """Information about the current GitHub release, or None if a release
-    isn't available.
-    """
+    github_release: Optional[GitHubRelease] = Field(
+        None,
+        description=(
+            "Information about the latest GitHub release. None if a release "
+            "isn't available."
+        ),
+    )
+
+    @property
+    def formatted_latest_commit_date(self) -> str:
+        """The formatted date of the latest commit."""
+        if self.github_release is not None:
+            if self.latest_commit_datetime < self.github_release.date_created:
+                return ""
+        return self.latest_commit_datetime.astimezone(
+            tz=PROJECT_TIMEZONE
+        ).strftime("%Y-%m-%d")
+
+    @property
+    def sortable_latest_commit_date(self) -> str:
+        """The sortable date of the latest commit."""
+        return str(self.latest_commit_datetime.timestamp())
+
+    @property
+    def sortable_release_date(self) -> str:
+        """The sortable date of the latest release."""
+        if self.github_release is not None:
+            return str(self.github_release.date_created.timestamp())
+        return "0"
 
 
-@dataclass(kw_only=True)
 class SpherexDocument(SpherexGitHubProject):
     """A general SPHEREx document."""
 
-    series: str
-    """The document series; typically the handle's prefix."""
+    series: str = Field(
+        ..., description="The document series; typically the handle's prefix."
+    )
 
-    handle: str
-    """The document's identifier."""
+    handle: str = Field(..., description="The document's handle.")
 
-    ssdc_author_name: str
-    """Name of the lead SSDC author."""
+    ssdc_author_name: str = Field(
+        ..., description="Name of the lead SSDC author."
+    )
 
 
-@dataclass(kw_only=True)
 class SpherexMsDocument(SpherexDocument):
     """A SPHEREx Module Specification, SSDC-MS."""
 
-    project_contact_name: str
+    project_contact_name: str = Field(
+        ..., description="Name of the project contact (SPHEREx POC)."
+    )
 
-    diagram_index: int
+    diagram_index: int = Field(..., description="The module's diagram index.")
 
-    pipeline_level: int
+    pipeline_level: int = Field(
+        ..., description="The module's pipeline level."
+    )
 
-    approval_str: Optional[str] = None
+    approval_str: Optional[str] = approval_field
 
-    difficulty: str
+    difficulty: str = Field(..., description="The module's difficulty level.")
 
     @property
     def diagram_ref(self) -> str:
+        """The displayable diagram reference for the module."""
         return f"L{self.pipeline_level}.{self.diagram_index}"
 
     @property
     def sortable_diagram_ref(self) -> str:
+        """The sortable diagram reference (zero-padded) for the module."""
         return f"L{self.pipeline_level}.{self.diagram_index:02d}"
 
 
-@dataclass(kw_only=True)
 class SpherexPmDocument(SpherexDocument):
     """A SPHEREx Project Management, SSDC-PM."""
 
-    approval_str: Optional[str] = None
+    approval_str: Optional[str] = approval_field
 
 
-@dataclass(kw_only=True)
 class SpherexIfDocument(SpherexDocument):
     """A SPHEREx Interface, SSDC-IF."""
 
-    approval_str: Optional[str] = None
+    approval_str: Optional[str] = approval_field
 
-    interface_partner_name: str
+    interface_partner_name: str = Field(
+        ..., description="Name of the interface partner (institution)."
+    )
 
 
-@dataclass(kw_only=True)
 class SpherexDpDocument(SpherexDocument):
     """A SPHEREx Interface, SSDC-DP."""
 
-    approval_str: Optional[str] = None
+    approval_str: Optional[str] = approval_field
 
 
-@dataclass(kw_only=True)
 class SpherexTrDocument(SpherexDocument):
     """A SPHEREx Test Report, SSDC-TR."""
 
-    approval_str: Optional[str] = None
+    approval_str: Optional[str] = approval_field
 
-    va_doors_id: Optional[str] = None
+    va_doors_id: Optional[str] = Field(None, description="VA DOORS ID.")
 
-    req_doors_id: Optional[str] = None
+    req_doors_id: Optional[str] = Field(None, description="REQ DOORS ID.")
 
-    ipac_jira_id: Optional[str] = None
+    ipac_jira_id: Optional[str] = Field(None, description="IPAC JIRA ID.")
 
     @property
     def has_verification_ids(self) -> bool:
+        """Flag indicating whether the document has any verification IDs."""
         return (
             (self.va_doors_id is not None)
             | (self.req_doors_id is not None)
@@ -153,44 +203,18 @@ class SpherexTrDocument(SpherexDocument):
 
     @property
     def ipac_jira_url(self) -> str:
+        """The URL of the IPAC JIRA ticket, or an empty string if none is
+        available.
+        """
         if self.ipac_jira_id:
             return f"https://jira.ipac.caltech.edu/browse/{self.ipac_jira_id}"
         else:
             return ""
 
 
-@dataclass(kw_only=True)
 class SpherexTnDocument(SpherexDocument):
     """A SPHEREx Technical Note, SSDC-TN."""
 
 
-@dataclass(kw_only=True)
 class SpherexOpDocument(SpherexDocument):
     """A SPHEREx Operations Note, SSDC-OP."""
-
-
-T = TypeVar("T", bound="SpherexProject")
-
-
-@dataclass(kw_only=True)
-class SpherexCategory(Generic[T]):
-    """A collection of SpherexProject items for a specific category."""
-
-    projects: List[T] = field(default_factory=list)
-
-    def upsert(self, project: T) -> None:
-        """Append a new project or replace an existing project with the new
-        data.
-
-        Projects are assessed to be matching based on a``project_id`` and
-        ``organization_id``.
-        """
-        for i, existing_project in enumerate(self.projects):
-            if (existing_project.project_id == project.project_id) and (
-                existing_project.organization_id == project.organization_id
-            ):
-                self.projects[i] = project
-                return
-
-        # Only if there isn't a match
-        self.projects.append(project)

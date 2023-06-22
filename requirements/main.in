@@ -11,7 +11,7 @@ starlette
 uvicorn[standard]
 
 # Other dependencies.
-safir
+safir[arq,redis]
 pydantic
 PyYAML
 Jinja2

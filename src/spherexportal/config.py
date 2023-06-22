@@ -3,9 +3,18 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from urllib.parse import urlparse
 
-from pydantic import BaseSettings, Field, FilePath, HttpUrl, SecretStr
+from arq.connections import RedisSettings
+from pydantic import (
+    BaseSettings,
+    Field,
+    FilePath,
+    HttpUrl,
+    RedisDsn,
+    SecretStr,
+)
+from safir.arq import ArqMode
 
 __all__ = ["Config", "Profile", "LogLevel"]
 
@@ -40,7 +49,7 @@ class Config(BaseSettings):
     dataset_path: FilePath = Field(..., env="PORTAL_DATASET_PATH")
 
     ltd_api_url: HttpUrl = Field(
-        "https://docs-api.ipac.caltech.edu",
+        HttpUrl("https://docs-api.ipac.caltech.edu/", scheme="https"),
         description="Root URL of the LTD API server.",
         env="PORTAL_LTD_API_URL",
     )
@@ -57,7 +66,7 @@ class Config(BaseSettings):
         env="PORTAL_LTD_API_USERNAME",
     )
 
-    ltd_api_password: Optional[SecretStr] = Field(
+    ltd_api_password: SecretStr | None = Field(
         None,
         description="Password corresponding to ltd_api_username",
         env="PORTAL_LTD_API_PASSWORD",
@@ -72,13 +81,13 @@ class Config(BaseSettings):
         env="PORTAL_S3_REGION",
     )
 
-    aws_access_key_id: Optional[str] = Field(
+    aws_access_key_id: str | None = Field(
         None,
         description="AWS access key ID; for getting metadata objects from S3.",
         env="PORTAL_AWS_ACCESS_KEY_ID",
     )
 
-    aws_access_key_secret: Optional[SecretStr] = Field(
+    aws_access_key_secret: SecretStr | None = Field(
         None,
         description=(
             "AWS access key secret; for getting metadata objects from S3."
@@ -94,6 +103,60 @@ class Config(BaseSettings):
         ),
         env="PORTAL_USE_MOCK_DATA",
     )
+
+    redis_url: RedisDsn = Field(
+        RedisDsn("redis://localhost:6379/0", scheme="redis"),
+        env="PORTAL_REDIS_URL",
+        description="Redis database URL for caching project metadata.",
+    )
+
+    arq_redis_url: RedisDsn = Field(
+        RedisDsn("redis://localhost:6379/1", scheme="redis"),
+        env="PORTAL_ARQ_REDIS_URL",
+        description="Redis database URL for the arq queue.",
+    )
+
+    arq_mode: ArqMode = Field(ArqMode.production, env="PORTAL_ARQ_MODE")
+
+    github_app_id: str | None = Field(
+        None,
+        env="PORTAL_GITHUB_APP_ID",
+        description="GitHub App ID for the SPHEREx Doc Portal",
+    )
+
+    github_webhook_secret: SecretStr | None = Field(
+        None,
+        env="PORTAL_GITHUB_WEBHOOK_SECRET",
+        description="GitHub webhook secret for the SPHEREx Doc Portal",
+    )
+
+    github_app_private_key: SecretStr | None = Field(
+        None,
+        env="PORTAL_GITHUB_APP_PRIVATE_KEY",
+        description="GitHub App private key for the SPHEREx Doc Portal",
+    )
+
+    @property
+    def arq_redis_settings(self) -> RedisSettings:
+        """Create a Redis settings instance for arq."""
+        url_parts = urlparse(self.arq_redis_url)
+        redis_settings = RedisSettings(
+            host=url_parts.hostname or "localhost",
+            port=url_parts.port or 6379,
+            database=int(url_parts.path.lstrip("/")) if url_parts.path else 0,
+        )
+        return redis_settings
+
+    @property
+    def is_github_app_enabled(self) -> bool:
+        """Return whether GitHub App integration is enabled."""
+        return all(
+            [
+                self.github_app_id,
+                self.github_webhook_secret,
+                self.github_app_private_key,
+            ]
+        )
 
 
 config = Config()
