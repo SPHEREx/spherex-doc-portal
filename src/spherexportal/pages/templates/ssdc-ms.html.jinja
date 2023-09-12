@@ -5,12 +5,11 @@
 {% block content %}
 <h1>Module Specifications (SSDC-MS)</h1>
 
-<p><a
-    href="https://collaboration.ipac.caltech.edu/pages/viewpage.action?spaceKey=SPHEREx&title=Pipeline+Module+Descriptions">Pipeline
+<p><a href="https://collaboration.ipac.caltech.edu/pages/viewpage.action?spaceKey=SPHEREx&title=Pipeline+Module+Descriptions">Pipeline
     diagram →</a>
 </p>
 
-{% if category.projects %}
+{% if projects %}
 <table class="sortable asc spherex-project-table">
   <thead>
     <tr>
@@ -24,7 +23,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for doc in category.projects|sort(attribute="sortable_diagram_ref") %}
+    {% for doc in projects|sort(attribute="sortable_diagram_ref") %}
     <tr>
       <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
       <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>

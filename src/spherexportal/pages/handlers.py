@@ -37,7 +37,7 @@ async def get_ssdc_ms(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-ms",
-        "category": projects_repo.ssdc_ms,
+        "projects": await projects_repo.ssdc_ms.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-ms.html.jinja", context)
@@ -50,7 +50,7 @@ async def get_ssdc_pm(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-pm",
-        "category": projects_repo.ssdc_pm,
+        "projects": await projects_repo.ssdc_pm.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-pm.html.jinja", context)
@@ -63,7 +63,7 @@ async def get_ssdc_if(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-if",
-        "category": projects_repo.ssdc_if,
+        "projects": await projects_repo.ssdc_if.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-if.html.jinja", context)
@@ -76,7 +76,7 @@ async def get_ssdc_dp(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-dp",
-        "category": projects_repo.ssdc_dp,
+        "projects": await projects_repo.ssdc_dp.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-dp.html.jinja", context)
@@ -89,7 +89,7 @@ async def get_ssdc_tr(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-tr",
-        "category": projects_repo.ssdc_tr,
+        "projects": await projects_repo.ssdc_tr.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-tr.html.jinja", context)
@@ -102,7 +102,7 @@ async def get_ssdc_tn(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-tn",
-        "category": projects_repo.ssdc_tn,
+        "projects": await projects_repo.ssdc_tn.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-tn.html.jinja", context)
@@ -115,7 +115,7 @@ async def get_ssdc_op(
 ) -> _TemplateResponse:
     context = {
         "current_path": "/ssdc-op",
-        "category": projects_repo.ssdc_op,
+        "projects": await projects_repo.ssdc_op.get_all(),
         "request": request,
     }
     return templates.TemplateResponse("ssdc-op.html.jinja", context)

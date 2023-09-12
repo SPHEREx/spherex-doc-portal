@@ -62,7 +62,7 @@ class ProjectService:
 
     async def bootstrap_mock_repo(self) -> None:
         mockdata_repo = MockDataRepository.load_builtin_data()
-        mockdata_repo.bootstrap_project_repository(self._repo)
+        await mockdata_repo.bootstrap_project_repository(self._repo)
 
     async def bootstrap_from_api(self) -> None:
         """Bootstrap the project repository using data from the LTD API."""
@@ -117,7 +117,8 @@ class ProjectService:
                     )
             except MetadataError as e:
                 self._logger.warning(
-                    f"Could ingest metadata for {project.slug}", details=str(e)
+                    f"Could not ingest metadata for {project.slug}",
+                    details=str(e),
                 )
                 continue
 
@@ -185,7 +186,7 @@ class ProjectService:
             ),
             difficulty=str(lander_metadata.difficulty),
         )
-        self._repo.ssdc_ms.upsert(domain_model)
+        await self._repo.ssdc_ms.upsert(domain_model)
 
     async def _ingest_ssdc_pm(
         self,
@@ -218,7 +219,7 @@ class ProjectService:
                 lander_metadata.approval
             ),
         )
-        self._repo.ssdc_pm.upsert(domain_model)
+        await self._repo.ssdc_pm.upsert(domain_model)
 
     async def _ingest_ssdc_if(
         self,
@@ -252,7 +253,7 @@ class ProjectService:
             ),
             interface_partner_name=lander_metadata.interface_partner,
         )
-        self._repo.ssdc_if.upsert(domain_model)
+        await self._repo.ssdc_if.upsert(domain_model)
 
     async def _ingest_ssdc_dp(
         self,
@@ -285,7 +286,7 @@ class ProjectService:
                 lander_metadata.approval
             ),
         )
-        self._repo.ssdc_dp.upsert(domain_model)
+        await self._repo.ssdc_dp.upsert(domain_model)
 
     async def _ingest_ssdc_tr(
         self,
@@ -321,7 +322,7 @@ class ProjectService:
             req_doors_id=lander_metadata.req_doors_id,
             ipac_jira_id=lander_metadata.ipac_jira_id,
         )
-        self._repo.ssdc_tr.upsert(domain_model)
+        await self._repo.ssdc_tr.upsert(domain_model)
 
     async def _ingest_ssdc_tn(
         self,
@@ -351,7 +352,7 @@ class ProjectService:
             latest_commit_datetime=project.default_edition.date_rebuilt,
             ssdc_author_name=self._get_ssdc_lead(lander_metadata),
         )
-        self._repo.ssdc_tn.upsert(domain_model)
+        await self._repo.ssdc_tn.upsert(domain_model)
 
     async def _ingest_ssdc_op(
         self,
@@ -381,4 +382,4 @@ class ProjectService:
             latest_commit_datetime=project.default_edition.date_rebuilt,
             ssdc_author_name=self._get_ssdc_lead(lander_metadata),
         )
-        self._repo.ssdc_op.upsert(domain_model)
+        await self._repo.ssdc_op.upsert(domain_model)

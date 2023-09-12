@@ -19,6 +19,7 @@ from structlog import get_logger
 
 from .config import config
 from .dependencies.projects import projects_dependency
+from .dependencies.redis import redis_dependency
 from .pages.handlers import router
 from .services.projectservice import ProjectService
 
@@ -49,9 +50,12 @@ async def startup_event() -> None:
     logger = get_logger(__name__)
     logger.bind(app_event="startup")
 
+    http_client = await http_client_dependency()
+    await redis_dependency.initialize(config.redis_url)
+    redis = await redis_dependency()
+    await projects_dependency.initialize(redis)
     projects_repo = await projects_dependency()
 
-    http_client = await http_client_dependency()
     project_service = ProjectService(
         repo=projects_repo, logger=logger, http_client=http_client
     )
@@ -65,4 +69,5 @@ async def startup_event() -> None:
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
+    await redis_dependency.close()
     await http_client_dependency.aclose()

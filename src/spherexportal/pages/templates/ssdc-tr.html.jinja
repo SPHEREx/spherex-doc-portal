@@ -5,7 +5,7 @@
 {% block content %}
 <h1>Test Reports (SSDC-TR)</h1>
 
-{% if category.projects %}
+{% if projects %}
 <table class="sortable asc spherex-project-table">
   <thead>
     <tr>
@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for doc in category.projects|sort(attribute="handle") %}
+    {% for doc in projects|sort(attribute="handle") %}
     <tr>
       <td><a href="{{ doc.url }}">{{ doc.handle }}</a></td>
       <td><a href="{{ doc.url }}">{{ doc.title }}</a></td>
