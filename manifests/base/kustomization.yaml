@@ -9,4 +9,5 @@ resources:
   - configmap.yaml
   - dataset-configmap.yaml
   - deployment.yaml
+  - worker.yaml
   - service.yaml
