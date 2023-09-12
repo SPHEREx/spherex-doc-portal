@@ -11,12 +11,12 @@ starlette
 uvicorn[standard]
 
 # Other dependencies.
-safir[arq,redis]
-pydantic
+safir[arq,redis] < 5.0.0
+pydantic < 2.0.0
 PyYAML
 Jinja2
 cachetools
 asyncache
 httpx
 aws-request-signer
-git+https://github.com/SPHEREx/spherex-lander-plugin.git@main#egg=spherex-lander-plugin
+spherex-lander-plugin @ git+https://github.com/SPHEREx/spherex-lander-plugin.git@main
