@@ -10,6 +10,7 @@ from safir.redis import PydanticRedisStorage
 
 from ..domain import (
     SpherexDpDocument,
+    SpherexGitHubSoftwareProject,
     SpherexIfDocument,
     SpherexMsDocument,
     SpherexOpDocument,
@@ -48,6 +49,34 @@ class SpherexProjectStore(PydanticRedisStorage[T]):
         await self.store(project.project_id, project)
 
 
+class SpherexSoftwareStore(PydanticRedisStorage[SpherexGitHubSoftwareProject]):
+    """A Redis-backed store for SPHEREx software projects."""
+
+    def __init__(self, redis: Redis, key_prefix: str):
+        super().__init__(
+            datatype=SpherexGitHubSoftwareProject,
+            redis=redis,
+            key_prefix=key_prefix,
+        )
+
+    async def get_all(self) -> list[SpherexGitHubSoftwareProject]:
+        """Get all software projects, sorted by ID (key)."""
+        keys = [m async for m in self.scan("*")]
+        keys.sort()
+        projects: list[SpherexGitHubSoftwareProject] = []
+        for k in keys:
+            project = await self.get(k)
+            if project:
+                projects.append(project)
+        return projects
+
+    async def upsert(self, project: SpherexGitHubSoftwareProject) -> None:
+        """Append a new project or replace an existing project with the new
+        data.
+        """
+        await self.store(project.github_url, project)
+
+
 @dataclass(kw_only=True)
 class ProjectRepository:
     """A repository for accessing documentation projects, organized around
@@ -67,6 +96,8 @@ class ProjectRepository:
     ssdc_tn: SpherexProjectStore[SpherexTnDocument]
 
     ssdc_op: SpherexProjectStore[SpherexOpDocument]
+
+    software: SpherexSoftwareStore
 
     @classmethod
     async def create(cls, redis: Redis) -> Self:
@@ -91,6 +122,7 @@ class ProjectRepository:
         op_store = SpherexProjectStore(
             SpherexOpDocument, redis, key_prefix="ssdc_op:"
         )
+        software_store = SpherexSoftwareStore(redis, key_prefix="sw:")
         return cls(
             ssdc_ms=ms_store,
             ssdc_pm=pm_store,
@@ -99,4 +131,5 @@ class ProjectRepository:
             ssdc_tr=tr_store,
             ssdc_tn=tn_store,
             ssdc_op=op_store,
+            software=software_store,
         )
