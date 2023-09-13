@@ -234,3 +234,77 @@ class SpherexTnDocument(SpherexDocument):
 
 class SpherexOpDocument(SpherexDocument):
     """A SPHEREx Operations Note, SSDC-OP."""
+
+
+class SpherexGitHubSoftwareProject(BaseModel):
+    """A GitHub-based SPHEREx software project.
+
+    This project may or may not have an associated LTD-deployed documentation
+    project. However, if the URL in the project's GitHub metadata matches
+    a LTD URL, the repository can be correlated with LTD.
+    """
+
+    github_url: str = Field(
+        ..., description="URL of the project's GitHub repo (`html_url`)."
+    )
+
+    github_owner: str = Field(
+        ..., description="GitHub owner (user or organization)."
+    )
+
+    github_repo: str = Field(..., description="GitHub repository name.")
+
+    documentation_url: Optional[str] = Field(
+        None,
+        description=(
+            "URL of the project's documentation, based on GitHub metadata."
+        ),
+    )
+
+    description: str = Field(..., description="Description of the project.")
+
+    github_topics: list[str] = Field(
+        description="List of GitHub topics for the repository.",
+        default_factory=list,
+    )
+
+    github_issues: GitHubIssueCount = Field(
+        ..., description="Summary info about open GitHub issues and PRs."
+    )
+
+    latest_commit_datetime: datetime = Field(
+        ...,
+        description=(
+            "Datetime of the latest commit to the default branch (UTC)."
+        ),
+    )
+
+    github_release: Optional[GitHubRelease] = Field(
+        None,
+        description=(
+            "Information about the latest GitHub release. None if a release "
+            "isn't available."
+        ),
+    )
+
+    @property
+    def formatted_latest_commit_date(self) -> str:
+        """The formatted date of the latest commit."""
+        if self.github_release is not None:
+            if self.latest_commit_datetime < self.github_release.date_created:
+                return ""
+        return self.latest_commit_datetime.astimezone(
+            tz=PROJECT_TIMEZONE
+        ).strftime("%Y-%m-%d")
+
+    @property
+    def sortable_latest_commit_date(self) -> str:
+        """The sortable date of the latest commit."""
+        return str(self.latest_commit_datetime.timestamp())
+
+    @property
+    def sortable_release_date(self) -> str:
+        """The sortable date of the latest release."""
+        if self.github_release is not None:
+            return str(self.github_release.date_created.timestamp())
+        return "0"
