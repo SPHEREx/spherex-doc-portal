@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 approval_field = Field(
     None, description="Approval information for the document."
@@ -14,6 +14,14 @@ approval_field = Field(
 
 PROJECT_TIMEZONE = ZoneInfo("America/Los_Angeles")
 """Timezone to use for project times when displaying in the UI."""
+
+
+def _ensure_timezone(dt: datetime) -> datetime:
+    """Ensure that the datetime is timezone-aware in UTC."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+
+    return dt
 
 
 class SpherexProject(BaseModel):
@@ -67,6 +75,10 @@ class GitHubRelease(BaseModel):
             "%Y-%m-%d"
         )
 
+    _normalize_datetime = validator(
+        "date_created", allow_reuse=True, pre=False
+    )(_ensure_timezone)
+
 
 class SpherexGitHubProject(SpherexProject):
     """A GitHub-based SPHEREx documentation project."""
@@ -115,6 +127,10 @@ class SpherexGitHubProject(SpherexProject):
         if self.github_release is not None:
             return str(self.github_release.date_created.timestamp())
         return "0"
+
+    _normalize_datetime = validator(
+        "latest_commit_datetime", allow_reuse=True, pre=False
+    )(_ensure_timezone)
 
 
 class SpherexDocument(SpherexGitHubProject):
