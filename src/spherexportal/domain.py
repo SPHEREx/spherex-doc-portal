@@ -6,7 +6,8 @@ from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
+from safir.pydantic import normalize_datetime
 
 approval_field = Field(
     None, description="Approval information for the document."
@@ -67,6 +68,10 @@ class GitHubRelease(BaseModel):
             "%Y-%m-%d"
         )
 
+    _normalize_datetime = validator(
+        "date_created", allow_reuse=True, pre=True
+    )(normalize_datetime)
+
 
 class SpherexGitHubProject(SpherexProject):
     """A GitHub-based SPHEREx documentation project."""
@@ -115,6 +120,10 @@ class SpherexGitHubProject(SpherexProject):
         if self.github_release is not None:
             return str(self.github_release.date_created.timestamp())
         return "0"
+
+    _normalize_datetime = validator(
+        "latest_commit_datetime", allow_reuse=True, pre=True
+    )(normalize_datetime)
 
 
 class SpherexDocument(SpherexGitHubProject):
