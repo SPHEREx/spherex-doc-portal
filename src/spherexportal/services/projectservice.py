@@ -5,6 +5,7 @@ from typing import Optional
 from urllib.parse import urlparse
 
 import httpx
+from gidgethub import HTTPException
 from gidgethub.httpx import GitHubAPI
 from safir.github import GitHubAppClientFactory
 
@@ -124,6 +125,9 @@ class ProjectService:
                 project=project,
                 org=org,
             )
+
+        # Ingest GitHub software projects
+        await self.ingest_installed_github_repos()
 
     def _parse_github_repo_url(self, repo_url: str) -> tuple[str, str]:
         parts = urlparse(repo_url)
@@ -620,6 +624,55 @@ class ProjectService:
         )
         await self._repo.ssdc_op.upsert(domain_model)
 
+    async def ingest_installed_github_repos(self) -> None:
+        """Ingest all GitHub repositories that the GitHub App is installed in,
+        and are not already in LTD as documents.
+        """
+        if self._github_factory is None:
+            self._logger.warning(
+                "Cannot ingest github project because GitHub App client is "
+                "not configured."
+            )
+            return
+        app_client = self._github_factory.create_app_client()
+
+        for owner_name in config.github_owners:
+            try:
+                installation_item = await app_client.getitem(
+                    "/orgs/{org}/installation", url_vars={"org": owner_name}
+                )
+            except HTTPException as e:
+                self._logger.warning(
+                    "Could not get installation for configured owner",
+                    owner=owner_name,
+                    path=f"/orgs/{owner_name}/installation",
+                    status_code=e.status_code,
+                )
+
+            installation_id = installation_item["id"]
+            gh_client = await self._github_factory.create_installation_client(
+                installation_id=installation_id
+            )
+            async for repo_item in gh_client.getiter(
+                "/installation/repositories", iterable_key="repositories"
+            ):
+                repo_name = repo_item["name"]
+                if self._name_matches_document_slug(repo_name):
+                    continue
+                repo_owner = repo_item["owner"]["login"]
+                try:
+                    await self.ingest_github_project(
+                        repo_owner=repo_owner, repo_name=repo_name
+                    )
+                except Exception as e:
+                    self._logger.warning(
+                        "Could not ingest GitHub project",
+                        repo_owner=repo_owner,
+                        repo_name=repo_name,
+                        exc_info=e,
+                    )
+                    continue
+
     async def ingest_github_project(
         self, repo_owner: str, repo_name: str
     ) -> None:
@@ -659,3 +712,19 @@ class ProjectService:
             github_release=release,
         )
         await self._repo.software.upsert(project)
+
+    def _name_matches_document_slug(self, repo_name: str) -> bool:
+        """Return whether the repo name matches a document slug."""
+        doc_slug_prefixes = [
+            "ssdc-ms",
+            "ssdc-pm",
+            "ssdc-if",
+            "ssdc-dp",
+            "ssdc-tr",
+            "ssdc-tn",
+            "ssdc-op",
+        ]
+        for slug_prefix in doc_slug_prefixes:
+            if repo_name.startswith(slug_prefix):
+                return True
+        return False
