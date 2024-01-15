@@ -136,6 +136,12 @@ class Config(BaseSettings):
         description="GitHub App private key for the SPHEREx Doc Portal",
     )
 
+    github_owners: list[str] = Field(
+        ["SPHEREx", "IPAC-SW"],
+        env="PORTAL_GITHUB_OWNERS",
+        description="GitHub owners to watch for SPHEREx software projects",
+    )
+
     @property
     def arq_redis_settings(self) -> RedisSettings:
         """Create a Redis settings instance for arq."""
