@@ -98,6 +98,21 @@ class GitHubRepositoryModel(GitHubRepositoryModelBase):
         description="API URL of the releases.",
     )
 
+    homepage: str | None = Field(
+        None,
+        description="URL of the project's homepage/documentation.",
+    )
+
+    topics: list[str] = Field(
+        description="List of topics for the repository.",
+        default_factory=list,
+    )
+
+    description: str = Field(
+        default="",
+        description="Description of the project.",
+    )
+
     @validator("pushed_at", pre=True, allow_reuse=True)
     def normalize_pushed_at(cls, value: str) -> datetime:
         """Normalize datetime values."""

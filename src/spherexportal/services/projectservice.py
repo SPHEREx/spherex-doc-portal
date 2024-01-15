@@ -43,6 +43,7 @@ from ..domain import (
     GitHubIssueCount,
     GitHubRelease,
     SpherexDpDocument,
+    SpherexGitHubSoftwareProject,
     SpherexIfDocument,
     SpherexMsDocument,
     SpherexOpDocument,
@@ -618,3 +619,43 @@ class ProjectService:
             ssdc_author_name=self._get_ssdc_lead(lander_metadata),
         )
         await self._repo.ssdc_op.upsert(domain_model)
+
+    async def ingest_github_project(
+        self, repo_owner: str, repo_name: str
+    ) -> None:
+        """Ingest a SpherexGitHubSoftwareProject from a GitHub repository."""
+        if self._github_factory is None:
+            self._logger.warning(
+                "Cannot ingest github project because GitHub App client is "
+                "not configured."
+            )
+            return
+
+        gh_client = (
+            await self._github_factory.create_installation_client_for_repo(
+                owner=repo_owner, repo=repo_name
+            )
+        )
+        repo_data = await self._get_github_repository(
+            github_client=gh_client,
+            repo_url=f"https://github.com/{repo_owner}/{repo_name}",
+        )
+        issue_count = await self._get_github_issue_count(
+            client=gh_client, repo=repo_data
+        )
+        release = await self._get_github_release(
+            client=gh_client, repo=repo_data
+        )
+
+        project = SpherexGitHubSoftwareProject(
+            github_url=repo_data.html_url,
+            github_owner=repo_owner,
+            github_repo=repo_name,
+            documentation_url=repo_data.homepage,
+            description=repo_data.description,
+            github_topics=repo_data.topics,
+            latest_commit_datetime=repo_data.pushed_at,
+            github_issues=issue_count,
+            github_release=release,
+        )
+        await self._repo.software.upsert(project)
