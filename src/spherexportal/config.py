@@ -6,14 +6,7 @@ from enum import Enum
 from urllib.parse import urlparse
 
 from arq.connections import RedisSettings
-from pydantic import (
-    BaseSettings,
-    Field,
-    FilePath,
-    HttpUrl,
-    RedisDsn,
-    SecretStr,
-)
+from pydantic import BaseSettings, Field, FilePath, HttpUrl, SecretStr
 from safir.arq import ArqMode
 
 __all__ = ["Config", "Profile", "LogLevel"]
@@ -104,17 +97,18 @@ class Config(BaseSettings):
         env="PORTAL_USE_MOCK_DATA",
     )
 
-    redis_url: RedisDsn = Field(
-        RedisDsn("redis://localhost:6379/0", scheme="redis"),
-        env="PORTAL_REDIS_URL",
-        description="Redis database URL for caching project metadata.",
-    )
+    redis_host: str = Field(env=["REDIS_HOST", "PORTAL_REDIS_HOST"])
 
-    arq_redis_url: RedisDsn = Field(
-        RedisDsn("redis://localhost:6379/1", scheme="redis"),
-        env="PORTAL_ARQ_REDIS_URL",
-        description="Redis database URL for the arq queue.",
-    )
+    redis_port: int = Field(env=["REDIS_6379_TCP_PORT", "PORTAL_REDIS_PORT"])
+
+    @property
+    def redis_url(self) -> str:
+        print("getting redis_url", self.redis_host, self.redis_port)
+        return f"redis://{self.redis_host}:{self.redis_port}/0"
+
+    @property
+    def arq_redis_url(self) -> str:
+        return f"redis://{self.redis_host}:{self.redis_port}/1"
 
     arq_mode: ArqMode = Field(ArqMode.production, env="PORTAL_ARQ_MODE")
 
