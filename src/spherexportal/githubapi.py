@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from safir.github.models import (
     GitHubRepositoryModel as GitHubRepositoryModelBase,
 )
@@ -79,7 +79,8 @@ class GitHubReleaseModel(BaseModel):
         description="User who created the release.",
     )
 
-    @validator("created_at", "published_at", pre=True, allow_reuse=True)
+    @field_validator("created_at", "published_at", mode="before")
+    @classmethod
     def normalize_datetime(cls, value: str) -> datetime:
         """Normalize datetime values."""
         d = normalize_isodatetime(value)
@@ -98,7 +99,8 @@ class GitHubRepositoryModel(GitHubRepositoryModelBase):
         description="API URL of the releases.",
     )
 
-    @validator("pushed_at", pre=True, allow_reuse=True)
+    @field_validator("pushed_at", mode="before")
+    @classmethod
     def normalize_pushed_at(cls, value: str) -> datetime:
         """Normalize datetime values."""
         d = normalize_isodatetime(value)

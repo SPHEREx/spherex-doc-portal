@@ -92,7 +92,7 @@ class ProjectService:
         """Bootstrap the project repository using data from the LTD API."""
         if self._github_factory is not None:
             try:
-                app_client = self._github_factory.create_app_client()
+                app_client = self._github_factory.create_anonymous_client()
                 jwt = self._github_factory.get_app_jwt()
                 app_info = await app_client.getitem("/app", jwt=jwt)
                 self._logger.info("GitHub App info", app_info=app_info)

@@ -26,12 +26,12 @@ class LtdEditionModel(BaseModel):
     project_url: HttpUrl
     """The URL or the edition's associated project resource."""
 
-    build_url: Optional[HttpUrl]
+    build_url: Optional[HttpUrl] = None
     """The URL or the build's associated product resource. This is null if
     the edition doesn't have a build yet.
     """
 
-    queue_url: Optional[HttpUrl]
+    queue_url: Optional[HttpUrl] = None
     """The URL of any queued task resource."""
 
     published_url: HttpUrl
@@ -49,7 +49,7 @@ class LtdEditionModel(BaseModel):
     date_rebuilt: datetime.datetime
     """The date when associated build was last updated (UTC)."""
 
-    date_ended: Optional[datetime.datetime]
+    date_ended: Optional[datetime.datetime] = None
     """The date when the build was created (UTC). Is null if the edition
     has not been deleted.
     """
@@ -66,7 +66,7 @@ class LtdEditionModel(BaseModel):
     build.
     """
 
-    tracked_ref: Optional[str]
+    tracked_ref: Optional[str] = None
     """Git ref that describe the version that this Edition is intended to point
     to when using the ``git_ref`` tracking mode.
     """
@@ -90,7 +90,7 @@ class LtdProjectModel(BaseModel):
     editions_url: HttpUrl
     """The URL of the project's edition resources."""
 
-    task_url: Optional[HttpUrl]
+    task_url: Optional[HttpUrl] = None
     """The URL of async task created by the request, if any."""
 
     slug: str
@@ -137,13 +137,13 @@ class LtdOrganizationModel(BaseModel):
     fastly_support: bool
     """Flag indicating is Fastly CDN support is enabled."""
 
-    fastly_domain: Optional[HttpUrl]
+    fastly_domain: Optional[HttpUrl] = None
     """The Fastly CDN domain name."""
 
-    fastly_service_id: Optional[str]
+    fastly_service_id: Optional[str] = None
     """The Fastly service ID."""
 
-    s3_bucket: Optional[str]
+    s3_bucket: Optional[str] = None
     """Name of the S3 bucket hosting builds."""
 
     s3_public_read: bool

@@ -7,6 +7,8 @@ constructed when this module is loaded and is not deferred until a function is
 called.
 """
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from importlib.metadata import metadata, version
 from pathlib import Path
 
@@ -26,6 +28,33 @@ from .services.projectservice import ProjectService
 __all__ = ["app", "config"]
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator:
+    """Context manager for the application lifespan."""
+    logger = get_logger(__name__)
+    logger.bind(app_event="startup")
+
+    http_client = await http_client_dependency()
+    await redis_dependency.initialize(str(config.redis_url))
+    redis = await redis_dependency()
+    await projects_dependency.initialize(redis)
+    projects_repo = await projects_dependency()
+
+    project_service = ProjectService(
+        repo=projects_repo, logger=logger, http_client=http_client
+    )
+    if config.use_mock_data:
+        await project_service.bootstrap_mock_repo()
+
+    logger.info("Finished startup")
+
+    yield
+
+    await redis_dependency.close()
+    await http_client_dependency.aclose()
+    logger.info("Finished shutdown")
+
+
 configure_logging(
     profile=config.profile,
     log_level=config.log_level,
@@ -43,29 +72,3 @@ static_path = Path(__file__).parent.joinpath("static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 app.add_middleware(XForwardedMiddleware)
-
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    logger = get_logger(__name__)
-    logger.bind(app_event="startup")
-
-    http_client = await http_client_dependency()
-    await redis_dependency.initialize(config.redis_url)
-    redis = await redis_dependency()
-    await projects_dependency.initialize(redis)
-    projects_repo = await projects_dependency()
-
-    project_service = ProjectService(
-        repo=projects_repo, logger=logger, http_client=http_client
-    )
-    if config.use_mock_data:
-        await project_service.bootstrap_mock_repo()
-
-    logger.info("Finished startup")
-
-
-@app.on_event("shutdown")
-async def shutdown_event() -> None:
-    await redis_dependency.close()
-    await http_client_dependency.aclose()

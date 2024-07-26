@@ -37,7 +37,7 @@ async def startup(ctx: dict[Any, Any]) -> None:
 
     # Set up FastAPI dependencies; we can use them "manually" with
     # arq to provide resources similarly to FastAPI endpoints
-    await redis_dependency.initialize(config.redis_url)
+    await redis_dependency.initialize(str(config.redis_url))
     redis = await redis_dependency()
     await projects_dependency.initialize(redis)
 
@@ -63,9 +63,7 @@ async def shutdown(ctx: dict[Any, Any]) -> None:
 # For info on ignoring the type checking here, see
 # https://github.com/samuelcolvin/arq/issues/249
 cron_jobs: list[cron] = []  # type: ignore
-cron_jobs.append(
-    cron(refresh_projects, minute={0, 15, 30, 45})  # type: ignore
-)
+cron_jobs.append(cron(refresh_projects, minute={0, 15, 30, 45}))
 
 
 class WorkerSettings:
