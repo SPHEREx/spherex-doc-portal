@@ -543,8 +543,16 @@ class ProjectService:
             approval_str=self._format_lander_approval_str(
                 lander_metadata.approval
             ),
-            va_doors_id=lander_metadata.va_doors_id,
-            req_doors_id=lander_metadata.req_doors_id,
+            va_doors_id=(
+                lander_metadata.va_doors_id.id
+                if lander_metadata.va_doors_id
+                else None
+            ),
+            req_doors_id=(
+                lander_metadata.req_doors_id.id
+                if lander_metadata.req_doors_id
+                else None
+            ),
             ipac_jira_id=lander_metadata.ipac_jira_id,
         )
         await self._repo.ssdc_tr.upsert(domain_model)
