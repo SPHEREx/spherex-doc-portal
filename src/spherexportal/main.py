@@ -36,9 +36,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator:
 
     http_client = await http_client_dependency()
     await redis_dependency.initialize(str(config.redis_url))
+    logger.info("Initialized redis dependency")
     redis = await redis_dependency()
     await projects_dependency.initialize(redis)
     projects_repo = await projects_dependency()
+    logger.info("Initialized projects dependency")
 
     project_service = ProjectService(
         repo=projects_repo, logger=logger, http_client=http_client
@@ -65,6 +67,7 @@ app = FastAPI(
     title="SPHEREx Documentation Portal",
     description=metadata("spherex-doc-portal")["Summary"],
     version=version("spherex-doc-portal"),
+    lifespan=lifespan,
 )
 app.include_router(router)
 
