@@ -125,7 +125,7 @@ class ProjectService:
             )
 
     def _parse_github_repo_url(self, repo_url: str) -> tuple[str, str]:
-        parts = urlparse(repo_url)
+        parts = urlparse(str(repo_url))
         path = parts.path
         owner, repo = path.split("/")[1:3]  # leave out leading "/"
         if repo.endswith(".git"):
@@ -142,7 +142,7 @@ class ProjectService:
             return None
         if self._github_factory is None:
             return None
-        if not repo_url.startswith("https://github.com/"):
+        if not str(repo_url).startswith("https://github.com/"):
             return None
         owner, repo = self._parse_github_repo_url(repo_url)
         try:
