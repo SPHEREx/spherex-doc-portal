@@ -361,18 +361,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexMsDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=github_date_updated,
@@ -409,18 +409,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexPmDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=github_date_updated,
@@ -447,18 +447,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexIfDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=project.default_edition.date_rebuilt,
@@ -486,18 +486,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexDpDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=github_date_updated,
@@ -524,18 +524,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexTrDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=github_date_updated,
@@ -565,18 +565,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexTnDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=github_date_updated,
@@ -600,18 +600,18 @@ class ProjectService:
             github_release,
             github_date_updated,
         ) = await self._get_common_github_metadata(
-            lander_metadata.repository_url,
+            str(lander_metadata.repository_url),
             default_updated_datetime=project.default_edition.date_rebuilt,
         )
 
         domain_model = SpherexOpDocument(
-            url=lander_metadata.canonical_url,
+            url=str(lander_metadata.canonical_url),
             series=lander_metadata.document_handle_prefix,
             handle=lander_metadata.identifier,
             title=lander_metadata.title,
             project_id=project.slug,
             organization_id=org.slug,
-            github_url=lander_metadata.repository_url,
+            github_url=str(lander_metadata.repository_url),
             github_issues=github_issues,
             github_release=github_release,
             latest_commit_datetime=project.default_edition.date_rebuilt,
