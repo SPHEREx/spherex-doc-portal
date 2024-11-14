@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 approval_field = Field(
     None, description="Approval information for the document."
@@ -60,6 +60,17 @@ class GitHubRelease(BaseModel):
         ..., description="Times (UTC) when the release was created."
     )
 
+    @field_validator("date_created", mode="after")
+    @classmethod
+    def validate_utc_timezone(cls, date: datetime) -> datetime:
+        """Ensure that the datetime is in UTC."""
+        # If the datetime is naieve, set it to UTC, otherwise convert it to
+        # UTC.
+        if date.tzinfo is None:
+            return date.replace(tzinfo=UTC)
+        else:
+            return date.astimezone(UTC)
+
     @property
     def formatted_date(self) -> str:
         """The formatted date of the release."""
@@ -93,6 +104,17 @@ class SpherexGitHubProject(SpherexProject):
             "isn't available."
         ),
     )
+
+    @field_validator("latest_commit_datetime", mode="after")
+    @classmethod
+    def validate_utc_timezone(cls, date: datetime) -> datetime:
+        """Ensure that the datetime is in UTC."""
+        # If the datetime is naieve, set it to UTC, otherwise convert it to
+        # UTC.
+        if date.tzinfo is None:
+            return date.replace(tzinfo=UTC)
+        else:
+            return date.astimezone(UTC)
 
     @property
     def formatted_latest_commit_date(self) -> str:
