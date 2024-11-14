@@ -47,12 +47,12 @@ class BaseGitHubProjectModel(BaseProjectModel):
     issues: int
     prs: int
     commit_date: datetime
-    tag: Optional[str]
-    tag_date: Optional[datetime]
+    tag: Optional[str] = None
+    tag_date: Optional[datetime] = None
 
     @property
     def github_issues(self) -> GitHubIssueCount:
-        github_url = self.github_url.rstrip("/")
+        github_url = str(self.github_url).rstrip("/")
         return GitHubIssueCount(
             open_issue_count=self.issues,
             open_pr_count=self.prs,
@@ -78,7 +78,7 @@ class SsdcMsModel(BaseSpherexDocumentModel):
     """The ssdc-ms field in the MockDataModel."""
 
     project_author: str
-    approval: Optional[str]
+    approval: Optional[str] = None
     difficulty: str
     pipeline_level: int
     diagram_index: int
@@ -93,7 +93,7 @@ class SsdcMsModel(BaseSpherexDocumentModel):
             title=self.title,
             project_id=self.project_id,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,
@@ -109,7 +109,7 @@ class SsdcMsModel(BaseSpherexDocumentModel):
 class SsdcPmModel(BaseSpherexDocumentModel):
     """The ssdc-pm field in the MockDataModel."""
 
-    approval: Optional[str]
+    approval: Optional[str] = None
 
     @property
     def domain_model(self) -> SpherexPmDocument:
@@ -121,7 +121,7 @@ class SsdcPmModel(BaseSpherexDocumentModel):
             title=self.title,
             project_id=self.project_id,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,
@@ -133,7 +133,7 @@ class SsdcPmModel(BaseSpherexDocumentModel):
 class SsdcIfModel(BaseSpherexDocumentModel):
     """The ssdc-if field in the MockDataModel."""
 
-    approval: Optional[str]
+    approval: Optional[str] = None
 
     interface_partner: str
 
@@ -147,7 +147,7 @@ class SsdcIfModel(BaseSpherexDocumentModel):
             title=self.title,
             project_id=self.project_id,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,
@@ -160,7 +160,7 @@ class SsdcIfModel(BaseSpherexDocumentModel):
 class SsdcDpModel(BaseSpherexDocumentModel):
     """The ssdc-dp field in the MockDataModel."""
 
-    approval: Optional[str]
+    approval: Optional[str] = None
 
     @property
     def domain_model(self) -> SpherexDpDocument:
@@ -172,7 +172,7 @@ class SsdcDpModel(BaseSpherexDocumentModel):
             title=self.title,
             project_id=self.project_id,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,
@@ -184,7 +184,7 @@ class SsdcDpModel(BaseSpherexDocumentModel):
 class SsdcTrModel(BaseSpherexDocumentModel):
     """The ssdc-tr field in the MockDataModel."""
 
-    approval: Optional[str]
+    approval: Optional[str] = None
 
     va_doors_id: Optional[str] = None
 
@@ -202,7 +202,7 @@ class SsdcTrModel(BaseSpherexDocumentModel):
             title=self.title,
             project_id=self.project_id,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,
@@ -228,7 +228,7 @@ class SsdcTnModel(BaseSpherexDocumentModel):
             project_id=self.project_id,
             ssdc_author_name=self.ssdc_author,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,
@@ -249,7 +249,7 @@ class SsdcOpModel(BaseSpherexDocumentModel):
             project_id=self.project_id,
             ssdc_author_name=self.ssdc_author,
             organization_id="spherex",
-            github_url=self.github_url,
+            github_url=str(self.github_url),
             github_issues=self.github_issues,
             github_release=self.github_release,
             latest_commit_datetime=self.commit_date,

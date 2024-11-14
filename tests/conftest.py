@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 import pytest_asyncio
@@ -23,7 +24,9 @@ async def redis_client() -> AsyncIterator[redis.Redis]:
 
     This fixture connects to the Redis server that runs via tox-docker.
     """
-    client: redis.Redis = redis.Redis(host="localhost", port=6379, db=0)
+    host = os.environ["REDIS_HOST"]
+    port = int(os.environ["REDIS_6379_TCP_PORT"])
+    client: redis.Redis = redis.Redis(host=host, port=port, db=0)
     yield client
 
     await client.close()

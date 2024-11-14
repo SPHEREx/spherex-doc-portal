@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 approval_field = Field(
     None, description="Approval information for the document."
@@ -14,14 +14,6 @@ approval_field = Field(
 
 PROJECT_TIMEZONE = ZoneInfo("America/Los_Angeles")
 """Timezone to use for project times when displaying in the UI."""
-
-
-def _ensure_timezone(dt: datetime) -> datetime:
-    """Ensure that the datetime is timezone-aware in UTC."""
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=UTC)
-
-    return dt
 
 
 class SpherexProject(BaseModel):
@@ -68,16 +60,23 @@ class GitHubRelease(BaseModel):
         ..., description="Times (UTC) when the release was created."
     )
 
+    @field_validator("date_created", mode="after")
+    @classmethod
+    def validate_utc_timezone(cls, date: datetime) -> datetime:
+        """Ensure that the datetime is in UTC."""
+        # If the datetime is naieve, set it to UTC, otherwise convert it to
+        # UTC.
+        if date.tzinfo is None:
+            return date.replace(tzinfo=UTC)
+        else:
+            return date.astimezone(UTC)
+
     @property
     def formatted_date(self) -> str:
         """The formatted date of the release."""
         return self.date_created.astimezone(tz=PROJECT_TIMEZONE).strftime(
             "%Y-%m-%d"
         )
-
-    _normalize_datetime = validator(
-        "date_created", allow_reuse=True, pre=False
-    )(_ensure_timezone)
 
 
 class SpherexGitHubProject(SpherexProject):
@@ -106,6 +105,17 @@ class SpherexGitHubProject(SpherexProject):
         ),
     )
 
+    @field_validator("latest_commit_datetime", mode="after")
+    @classmethod
+    def validate_utc_timezone(cls, date: datetime) -> datetime:
+        """Ensure that the datetime is in UTC."""
+        # If the datetime is naieve, set it to UTC, otherwise convert it to
+        # UTC.
+        if date.tzinfo is None:
+            return date.replace(tzinfo=UTC)
+        else:
+            return date.astimezone(UTC)
+
     @property
     def formatted_latest_commit_date(self) -> str:
         """The formatted date of the latest commit."""
@@ -127,10 +137,6 @@ class SpherexGitHubProject(SpherexProject):
         if self.github_release is not None:
             return str(self.github_release.date_created.timestamp())
         return "0"
-
-    _normalize_datetime = validator(
-        "latest_commit_datetime", allow_reuse=True, pre=False
-    )(_ensure_timezone)
 
 
 class SpherexDocument(SpherexGitHubProject):

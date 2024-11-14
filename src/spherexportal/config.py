@@ -2,18 +2,22 @@
 
 from __future__ import annotations
 
+import os
 from enum import Enum
+from typing import Annotated, TypeAlias
 from urllib.parse import urlparse
 
 from arq.connections import RedisSettings
 from pydantic import (
-    BaseSettings,
+    AfterValidator,
     Field,
     FilePath,
     HttpUrl,
-    RedisDsn,
     SecretStr,
+    UrlConstraints,
 )
+from pydantic_core import Url
+from pydantic_settings import BaseSettings
 from safir.arq import ArqMode
 
 __all__ = ["Config", "Profile", "LogLevel"]
@@ -37,39 +41,83 @@ class LogLevel(str, Enum):
     CRITICAL = "CRITICAL"
 
 
+def _validate_env_redis_dsn(v: Url) -> Url:
+    """Possibly adjust a Redis DSN based on environment variables.
+    When run via tox and tox-docker, the Redis hostname and port will be
+    randomly selected and exposed only in environment variables. We have to
+    patch that into the Redis URL at runtime since `tox doesn't have a way of
+    substituting it into the environment
+    <https://github.com/tox-dev/tox-docker/issues/55>`__.
+    """
+    if port := os.getenv("REDIS_6379_TCP_PORT"):
+        return Url.build(
+            scheme=v.scheme,
+            username=v.username,
+            password=v.password,
+            host=os.getenv("REDIS_HOST", v.unicode_host() or "localhost"),
+            port=int(port),
+            path=v.path.lstrip("/") if v.path else v.path,
+            query=v.query,
+            fragment=v.fragment,
+        )
+    else:
+        return v
+
+
+EnvRedisDsn: TypeAlias = Annotated[
+    Url,
+    UrlConstraints(
+        allowed_schemes=["redis"],
+        default_host="localhost",
+        default_port=6379,
+        default_path="/0",
+    ),
+    AfterValidator(_validate_env_redis_dsn),
+]
+"""Redis data source URL honoring Docker environment variables.
+
+Unlike the standard Pydantic ``RedisDsn`` type, this does not support the
+``rediss`` scheme, which indicates the use of TLS.
+"""
+
+
 class Config(BaseSettings):
-    name: str = Field("spherexportal", env="SAFIR_NAME")
+    name: str = Field("spherexportal", validation_alias="SAFIR_NAME")
 
-    profile: Profile = Field(Profile.production, env="SAFIR_PROFILE")
+    profile: Profile = Field(
+        Profile.production, validation_alias="SAFIR_PROFILE"
+    )
 
-    log_level: LogLevel = Field(LogLevel.INFO, env="SAFIR_LOG_LEVEL")
+    log_level: LogLevel = Field(
+        LogLevel.INFO, validation_alias="SAFIR_LOG_LEVEL"
+    )
 
-    logger_name: str = Field("spherexportal", env="SAFIR_LOGGER")
+    logger_name: str = Field("spherexportal", validation_alias="SAFIR_LOGGER")
 
-    dataset_path: FilePath = Field(..., env="PORTAL_DATASET_PATH")
+    dataset_path: FilePath = Field(..., validation_alias="PORTAL_DATASET_PATH")
 
     ltd_api_url: HttpUrl = Field(
-        HttpUrl("https://docs-api.ipac.caltech.edu/", scheme="https"),
+        HttpUrl("https://docs-api.ipac.caltech.edu/"),
         description="Root URL of the LTD API server.",
-        env="PORTAL_LTD_API_URL",
+        validation_alias="PORTAL_LTD_API_URL",
     )
 
     ltd_organization: str = Field(
         "spherex",
         description="Organization name in the LTD API.",
-        env="PORTAL_LTD_API_ORG",
+        validation_alias="PORTAL_LTD_API_ORG",
     )
 
     ltd_api_username: str = Field(
         "spherex-portal",
         description="Username for LTD API",
-        env="PORTAL_LTD_API_USERNAME",
+        validation_alias="PORTAL_LTD_API_USERNAME",
     )
 
     ltd_api_password: SecretStr | None = Field(
         None,
         description="Password corresponding to ltd_api_username",
-        env="PORTAL_LTD_API_PASSWORD",
+        validation_alias="PORTAL_LTD_API_PASSWORD",
     )
 
     # Ideally this should come from the LTD API, since the bucket's name is
@@ -78,13 +126,13 @@ class Config(BaseSettings):
     s3_region: str = Field(
         "us-west-1",
         description="AWS region for the S3 bucket.",
-        env="PORTAL_S3_REGION",
+        validation_alias="PORTAL_S3_REGION",
     )
 
     aws_access_key_id: str | None = Field(
         None,
         description="AWS access key ID; for getting metadata objects from S3.",
-        env="PORTAL_AWS_ACCESS_KEY_ID",
+        validation_alias="PORTAL_AWS_ACCESS_KEY_ID",
     )
 
     aws_access_key_secret: SecretStr | None = Field(
@@ -92,7 +140,7 @@ class Config(BaseSettings):
         description=(
             "AWS access key secret; for getting metadata objects from S3."
         ),
-        env="PORTAL_AWS_ACCESS_KEY_SECRET",
+        validation_alias="PORTAL_AWS_ACCESS_KEY_SECRET",
     )
 
     use_mock_data: bool = Field(
@@ -101,45 +149,47 @@ class Config(BaseSettings):
             "Use the YAML dataset rather than obtaining metadata from live "
             "sources like LTD and S3"
         ),
-        env="PORTAL_USE_MOCK_DATA",
+        validation_alias="PORTAL_USE_MOCK_DATA",
     )
 
-    redis_url: RedisDsn = Field(
-        RedisDsn("redis://localhost:6379/0", scheme="redis"),
-        env="PORTAL_REDIS_URL",
-        description="Redis database URL for caching project metadata.",
+    redis_url: EnvRedisDsn = Field(
+        Url("redis://localhost:6379/0"),
+        description="URL of the Redis server.",
+        validation_alias="PORTAL_REDIS_URL",
     )
 
-    arq_redis_url: RedisDsn = Field(
-        RedisDsn("redis://localhost:6379/1", scheme="redis"),
-        env="PORTAL_ARQ_REDIS_URL",
-        description="Redis database URL for the arq queue.",
+    arq_redis_url: EnvRedisDsn = Field(
+        Url("redis://localhost:6379/1"),
+        description="URL of the Redis server for Arq.",
+        validation_alias="PORTAL_ARQ_REDIS_URL",
     )
 
-    arq_mode: ArqMode = Field(ArqMode.production, env="PORTAL_ARQ_MODE")
+    arq_mode: ArqMode = Field(
+        ArqMode.production, validation_alias="PORTAL_ARQ_MODE"
+    )
 
-    github_app_id: str | None = Field(
+    github_app_id: int | None = Field(
         None,
-        env="PORTAL_GITHUB_APP_ID",
+        validation_alias="PORTAL_GITHUB_APP_ID",
         description="GitHub App ID for the SPHEREx Doc Portal",
     )
 
     github_webhook_secret: SecretStr | None = Field(
         None,
-        env="PORTAL_GITHUB_WEBHOOK_SECRET",
+        validation_alias="PORTAL_GITHUB_WEBHOOK_SECRET",
         description="GitHub webhook secret for the SPHEREx Doc Portal",
     )
 
     github_app_private_key: SecretStr | None = Field(
         None,
-        env="PORTAL_GITHUB_APP_PRIVATE_KEY",
+        validation_alias="PORTAL_GITHUB_APP_PRIVATE_KEY",
         description="GitHub App private key for the SPHEREx Doc Portal",
     )
 
     @property
     def arq_redis_settings(self) -> RedisSettings:
         """Create a Redis settings instance for arq."""
-        url_parts = urlparse(self.arq_redis_url)
+        url_parts = urlparse(str(self.arq_redis_url))
         redis_settings = RedisSettings(
             host=url_parts.hostname or "localhost",
             port=url_parts.port or 6379,
